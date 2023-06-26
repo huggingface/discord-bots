@@ -1,0 +1,4 @@
+git+https://github.com/Rapptz/discord.py.git
+Pillow 
+gradio_client
+ratelimiter
