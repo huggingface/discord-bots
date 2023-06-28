@@ -6,7 +6,7 @@ from discord import Embed, Color
 import gradio_client
 import gradio as gr
 from gradio_client import Client
-import os # needed for DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
+import os
 import threading 
 import requests
 import json
@@ -18,10 +18,6 @@ import asyncio
 import concurrent.futures
 import multiprocessing
 import glob
-#-------------------------------------------------------------------------------------------------------------------------------------
-# PR checklist
-# HF guild id for MY_GUILD
-# HF_TOKEN, DISCORD_TOKEN verification
 
 # HF GUILD SETTINGS
 MY_GUILD = discord.Object(id=879548962464493619)  # HF = 879548962464493619, test = 1077674588122648679
