@@ -26,7 +26,7 @@ BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 110223665
 
 deepfloyd_client = Client("huggingface-projects/IF", HF_TOKEN)
 falcon_client = Client("HuggingFaceH4/falcon-chat", HF_TOKEN)
-#instructions are for Falcon-chat and can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat
+#instructions are for Falcon-chat and can be found here:  https://huggingface.co/spaces/HuggingFaceH4/falcon-chat
 instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
 
 class MyClient(discord.Client):
