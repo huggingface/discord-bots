@@ -1,22 +1,14 @@
-from typing import Optional
 import discord
 from discord import app_commands
-from discord.ext import commands
-from discord import Embed, Color
 import gradio_client
 import gradio as gr
 from gradio_client import Client
 import os
 import threading 
-import requests
 import json
 import random
-import time
-import re
 from PIL import Image
 import asyncio
-import concurrent.futures
-import multiprocessing
 import glob
 
 # HF GUILD SETTINGS
@@ -32,21 +24,13 @@ FALCON_CHANNEL_ID = 1079459939405279232 if os.getenv("TEST_ENV", False) else 111
 DEEPFLOYD_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) else 1119313215675973714
 BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
 
-# HF =   <a:loading:1114111677990981692>
-# test = 🔁
-
-# HF = <:agree:1098629085955113011>
-# test = ✔️
-
-# HF = <:disagree:1098628957521313892>
-# test = ❌
-
 deepfloyd_client = Client("huggingface-projects/IF", HF_TOKEN)
 falcon_client = Client("HuggingFaceH4/falcon-chat", HF_TOKEN)
+#instructions are for Falcon-chat and can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat
 instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
-#-------------------------------------------------------------------------------------------------------------------------------------
-# This structure allows commands to work instantly (instead of needing to sync global commands for up to an hour)
+
 class MyClient(discord.Client):
+    """This structure allows commands to work instantly (instead of needing to sync global commands for up to an hour)"""
     def __init__(self, *, intents: discord.Intents):
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
@@ -56,24 +40,25 @@ class MyClient(discord.Client):
         self.tree.copy_global_to(guild=MY_GUILD)
         await self.tree.sync(guild=MY_GUILD)
 
-intents = discord.Intents.all() 
-client = MyClient(intents=intents)
-#-------------------------------------------------------------------------------------------------------------------------------------
+client = MyClient(intents=discord.Intents.default())
+
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user} (ID: {client.user.id})')
     print('------')
-#-------------------------------------------------------------------------------------------------------------------------------------
+
 async def fullqueue(e, thread):
+    """Gives more descriptive error messages for the user"""
     error_message = str(e)
     elif "Error: Queue is full! Please try again." in error_message:
         await thread.send("Queue is full! Please try again.")
     # raised when the space we depend on needs to build after some inactivity (~10h)
     elif "local variable 'stage_1_results' referenced before assignment" in error_message:
         await thread.send("Space is building! Please try again after a few minutes.") 
-#-------------------------------------------------------------------------------------------------------------------------------------  
+ 
 # deepfloydif stage 1 generation
 def deepfloyd_stage1(prompt):
+    """generates an image based on a prompt"""
     negative_prompt = ''
     seed = random.randint(0, 1000)
     number_of_images = 4
@@ -84,27 +69,27 @@ def deepfloyd_stage1(prompt):
     stage_1_results, stage_1_param_path, stage_1_result_path = deepfloyd_client.predict(prompt, negative_prompt, seed, number_of_images, guidance_scale, custom_timesteps_1, number_of_inference_steps, api_name='/generate64')
     
     return [stage_1_results, stage_1_param_path, stage_1_result_path]        
-#------------------------------------------------------------------------------------------------------------------------------------- 
-# deepfloydif stage 2 upscaling
+
 def deepfloyd_stage2(index, stage_1_result_path):
+    """upscales one of the images from deepfloyd_stage1 based on the chosen index"""
     selected_index_for_stage_2 = index
     seed_2 = 0
     guidance_scale_2 = 4
     custom_timesteps_2 = 'smart50'
     number_of_inference_steps_2 = 50
     result_path = deepfloyd_client.predict(stage_1_result_path, selected_index_for_stage_2, seed_2, guidance_scale_2, custom_timesteps_2, number_of_inference_steps_2, api_name='/upscale256')
-    
     return result_path    
-#------------------------------------------------------------------------------------------------------------------------------------- 
+
 async def react1234(reaction_emojis, combined_image_dfif):
+    """sets up 4 reaction emojis so the user can choose an image to upscale for deepfloydif"""
     for emoji in reaction_emojis:
         await combined_image_dfif.add_reaction(emoji) 
-#------------------------------------------------------------------------------------------------------------------------------------- 
-# deepfloydIF command (generate images with realistic text using slash commands)
+        
 @client.tree.command()
 @app_commands.describe(
     prompt='Enter a prompt to generate an image! Can generate realistic text, too!')
 async def deepfloydif(interaction: discord.Interaction, prompt: str):
+    """deepfloydIF command (generate images with realistic text using slash commands)"""
     thread = None
     try:
         global BOT_USER_ID
@@ -113,6 +98,7 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
             if interaction.channel.id == DEEPFLOYD_CHANNEL_ID:
                 await interaction.response.send_message(f"Working on it!")
                 channel = interaction.channel
+                # interaction.response message can't be used to create a thread, so we create another message
                 message = await channel.send(f"DeepfloydIF Thread")
                 await message.add_reaction('<a:loading:1114111677990981692>')
                 thread = await message.create_thread(name=f'{prompt}', auto_archive_duration=60) 
@@ -132,18 +118,14 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
                 png_files = list(glob.glob(f"{stage_1_results}/**/*.png"))
 
                 if png_files:
-                    img1 = load_image(png_files, stage_1_results, 0)
-                    img2 = load_image(png_files, stage_1_results, 1)
-                    img3 = load_image(png_files, stage_1_results, 2)
-                    img4 = load_image(png_files, stage_1_results, 3)
-                
+                    # take all 4 images and combine them into one large 2x2 image (similar to Midjourney)
+                    png_file_index = 0
+                    images = load_image(png_files, stage_1_results, png_file_index) 
                     combined_image = Image.new('RGB', (img1.width * 2, img1.height * 2))
-                
-                    combined_image.paste(img1, (0, 0))
-                    combined_image.paste(img2, (img1.width, 0))
-                    combined_image.paste(img3, (0, img1.height))
-                    combined_image.paste(img4, (img1.width, img1.height))
-                
+                    combined_image.paste(images[0], (0, 0))
+                    combined_image.paste(images[1], (images[0].width, 0))
+                    combined_image.paste(images[2], (0, images[0].height))
+                    combined_image.paste(images[3], (images[0].width, images[0].height))
                     combined_image_path = os.path.join(stage_1_results, f'{partialpath}{dfif_command_message_id}.png')
                     combined_image.save(combined_image_path)
 
@@ -153,17 +135,19 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
 
                     emoji_list = ['↖️', '↗️', '↙️', '↘️']
                     await react1234(emoji_list, combined_image_dfif)
-                        
                     await message.remove_reaction('<a:loading:1114111677990981692>', client.user)
                     await message.add_reaction('<:agree:1098629085955113011>')
+                else:
+                    await thread.send(f'{interaction.user.mention} No PNG files were found, cannot post them!')
 
     except Exception as e:
         print(f"Error: {e}")
         await message.remove_reaction('<a:loading:1114111677990981692>', client.user)
         await message.add_reaction('<:disagree:1098628957521313892>')
         #await thread.send(f"Error: {e} <@811235357663297546> (continue_falcon error)")
-#-------------------------------------------------------------------------------------------------------------------------------------  
+
 def load_image(png_files, stage_1_results, png_file_index):
+    """opens images as variables so we can combine them later"""
     for file in png_files:
         png_file = png_files[png_file_index]
         png_path = os.path.join(stage_1_results, png_file)
@@ -177,16 +161,14 @@ def load_image(png_files, stage_1_results, png_file_index):
             img4 = Image.open(png_path)
         png_file_index = png_file_index + 1
     return [img1, img2, img3, img4]
-#-------------------------------------------------------------------------------------------------------------------------------------  
-# upscaling function for images generated using /deepfloydif
+
 async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id): 
+    """upscaling function for images generated using /deepfloydif"""
     try:
-        #await thread.send(f"inside dfif2")
         parent_channel = thread.parent
         dfif_command_message = await parent_channel.fetch_message(dfif_command_message_id)
         await dfif_command_message.remove_reaction('<:agree:1098629085955113011>', client.user)
         await dfif_command_message.add_reaction('<a:loading:1114111677990981692>')
-        #await thread.send(f"getting index")
         number = index + 1
         if number == 1:
             position = "top left"
@@ -201,8 +183,7 @@ async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id
         # run blocking function in executor
         loop = asyncio.get_running_loop()
         result_path = await loop.run_in_executor(None, deepfloyd_stage2, index, stage_1_result_path) 
-
-        #await thread.send(f"✅upscale done")          
+        
         with open(result_path, 'rb') as f:
             await thread.send(f'Here is the upscaled image!', file=discord.File(f, 'result.png'))
             
@@ -219,9 +200,10 @@ async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id
         await thread.send(f"Error during stage 2 upscaling, {e}") 
         await fullqueue(e, thread)
         await thread.edit(archived=True)
-#-------------------------------------------------------------------------------------------------------------------------------------
+
 @client.event
 async def on_reaction_add(reaction, user): 
+    """checks for a reaction in order to call dfif2"""
     try:
         global BOT_USER_ID
         global DEEPFLOYD_CHANNEL_ID
@@ -247,7 +229,6 @@ async def on_reaction_add(reaction, user):
                             index = 2
                         elif emoji == "↘️":
                             index = 3        
-                        index = index
                         stage_1_result_path = fullpath
                         thread = reaction.message.channel
                         dfif_command_message_id = messageid
@@ -255,11 +236,12 @@ async def on_reaction_add(reaction, user):
 
     except Exception as e:
         print(f"Error: {e} (known error, does not cause issues, low priority)")
-#------------------------------------------------------------------------------------------------------------------------------------- 
+ 
 @client.tree.command()
 @app_commands.describe(
     prompt='Enter some text to chat with the bot! Like this: /falcon Hello, how are you?')
 async def falcon(interaction: discord.Interaction, prompt: str):
+    """generates text based on a given prompt"""
     try:  
         global falcon_userid_threadid_dictionary # tracks userid-thread existence
         global instructions
@@ -271,7 +253,6 @@ async def falcon(interaction: discord.Interaction, prompt: str):
             if interaction.channel.id == FALCON_CHANNEL_ID: 
                 await interaction.response.send_message(f"Working on it!")
                 channel = interaction.channel
-                # 1
                 message = await channel.send(f"Creating thread...")
                 thread = await message.create_thread(name=f'{prompt}', auto_archive_duration=60)  # interaction.user
                 await thread.send(f"[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon " \
@@ -292,17 +273,16 @@ async def falcon(interaction: discord.Interaction, prompt: str):
                     output_text = data[-1][-1] # we output this as the bot
 
                 threadid_conversation[thread.id] = full_generation
-                
                 falcon_userid_threadid_dictionary[thread.id] = interaction.user.id
-                
                 print(output_text)
                 await thread.send(f"{output_text}")  
 
     except Exception as e:
         print(f"Error: {e}")
         #await thread.send(f"{e} cc <@811235357663297546> (falconprivate error)") 
-#------------------------------------------------------------------------------------------------------------------------------------- 
+
 async def continue_falcon(message):
+    """continues a given conversation based on chathistory"""
     try:
         global instructions
         global threadid_conversation
@@ -323,7 +303,6 @@ async def continue_falcon(message):
 
         threadid_conversation[message.channel.id] = full_generation # overwrite the old file
         falcon_userid_threadid_dictionary[message.channel.id] = message.author.id
-        
         print(output_text)
         await message.reply(f"{output_text}")  
         await message.remove_reaction('<a:loading:1114111677990981692>', client.user) 
@@ -331,23 +310,21 @@ async def continue_falcon(message):
     except Exception as e:
         print(f"Error: {e}")
         await message.reply(f"Error: {e} <@811235357663297546> (continue_falcon error)")
-#-------------------------------------------------------------------------------------------------------------------------------------
+
 @client.event
 async def on_message(message):
+    """detects messages and calls continue_falcon if we're in the right channel"""
     try:
         if not message.author.bot:
             global falcon_userid_threadid_dictionary # tracks userid-thread existence
             if message.channel.id in falcon_userid_threadid_dictionary: # is this a valid thread?
                 if falcon_userid_threadid_dictionary[message.channel.id] == message.author.id: # more than that - is this specifically the right user for this thread?
-                    # call job for falcon
-                    #await message.reply("checks succeeded, calling continue_falcon")
                     await continue_falcon(message)
 
     except Exception as e:
         print(f"Error: {e}")
-#-------------------------------------------------------------------------------------------------------------------------------------
-# running in thread
 
+# running in thread
 def run_bot():
     client.run(DISCORD_TOKEN)
 
