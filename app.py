@@ -110,7 +110,7 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
                     # take all 4 images and combine them into one large 2x2 image (similar to Midjourney)
                     png_file_index = 0
                     images = load_image(png_files, stage_1_results, png_file_index) 
-                    combined_image = Image.new('RGB', (img1.width * 2, img1.height * 2))
+                    combined_image = Image.new('RGB', (images[0].width * 2, images[0].height * 2))
                     combined_image.paste(images[0], (0, 0))
                     combined_image.paste(images[1], (images[0].width, 0))
                     combined_image.paste(images[2], (0, images[0].height))
@@ -119,8 +119,7 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
                     combined_image.save(combined_image_path)
 
                     with open(combined_image_path, 'rb') as f:
-                        combined_image_dfif = await thread.send(f'{interaction.user.mention}
-                        React with the image number you want to upscale!', file=discord.File(f, f'{partial_path}{dfif_command_message_id}.png'))                
+                        combined_image_dfif = await thread.send(f'{interaction.user.mention} React with the image number you want to upscale!', file=discord.File(f, f'{partial_path}{dfif_command_message_id}.png'))                
 
                     emoji_list = ['↖️', '↗️', '↙️', '↘️']
                     await react_1234(emoji_list, combined_image_dfif)
@@ -173,7 +172,7 @@ async def dfif2(index: int, stage_1_result_path, thread, dfif_command_message_id
         result_path = await loop.run_in_executor(None, deepfloyd_stage2, index, stage_1_result_path) 
         
         with open(result_path, 'rb') as f:
-            await thread.send(f'Here is the upscaled image!', file=discord.File(f, 'result.png'))
+            await thread.send('Here is the upscaled image!', file=discord.File(f, 'result.png'))
             
         await dfif_command_message.remove_reaction('<a:loading:1114111677990981692>', client.user)
         await dfif_command_message.add_reaction('<:agree:1098629085955113011>')
@@ -194,7 +193,6 @@ async def on_reaction_add(reaction, user):
     try:
         global BOT_USER_ID
         global DEEPFLOYD_CHANNEL_ID
-        channel = reaction.message.channel
         if user.id != BOT_USER_ID: # 
             thread = reaction.message.channel
             thread_parent_id = thread.parent.id
@@ -238,19 +236,18 @@ async def falcon(interaction: discord.Interaction, prompt: str):
 
         if interaction.user.id != BOT_USER_ID:
             if interaction.channel.id == FALCON_CHANNEL_ID: 
-                await interaction.response.send_message(f"Working on it!")
+                await interaction.response.send_message("Working on it!")
                 channel = interaction.channel
-                message = await channel.send(f"Creating thread...")
+                message = await channel.send("Creating thread...")
                 thread = await message.create_thread(name=f'{prompt}', auto_archive_duration=60)  # interaction.user
-                await thread.send(f"[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon " \
-                f"model and system prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]")
+                await thread.send("[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon model and system prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]")
 
                 chat_history = falcon_client.predict( 
                         fn_index=5
                 ) # []    
                 job = falcon_client.submit(prompt, chat_history, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
-                while job.done() == False: 
-                    status = job.status() 
+                while job.done() is False: 
+                    pass 
                 else:
                     file_paths = job.outputs()
                     full_generation = file_paths[-1]
@@ -277,8 +274,8 @@ async def continue_falcon(message):
         prompt = message.content
 
         job = falcon_client.submit(prompt, chathistory, instructions, 0.8, 0.9, fn_index=1)  # This is not blocking, similar to run_in_executor (but better)
-        while job.done() == False: 
-            status = job.status() 
+        while job.done() is False: 
+            pass 
         else:
             file_paths = job.outputs()
             full_generation = file_paths[-1]
