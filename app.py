@@ -1,6 +1,5 @@
 import discord
 from discord import app_commands
-import gradio_client
 import gradio as gr
 from gradio_client import Client
 import os
@@ -86,14 +85,13 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
         global DEEPFLOYD_CHANNEL_ID
         if interaction.user.id != BOT_USER_ID:
             if interaction.channel.id == DEEPFLOYD_CHANNEL_ID:
-                await interaction.response.send_message(f"Working on it!")
+                await interaction.response.send_message("Working on it!")
                 channel = interaction.channel
                 # interaction.response message can't be used to create a thread, so we create another message
-                message = await channel.send(f"DeepfloydIF Thread")
+                message = await channel.send("DeepfloydIF Thread")
                 await message.add_reaction('<a:loading:1114111677990981692>')
                 thread = await message.create_thread(name=f'{prompt}', auto_archive_duration=60) 
-                await thread.send(f"[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information" \
-                f" on the DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF")
+                await thread.send("[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF")
 
                 dfif_command_message_id = message.id # used for updating the 'status' of our generations using reaction emojis
                 
