@@ -95,7 +95,7 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
 
                 dfif_command_message_id = message.id # used for updating the 'status' of our generations using reaction emojis
                 
-                await thread.send(f'{interaction.user.mention}Generating images in thread, can take ~1 minute...')
+                await thread.send(f'{interaction.user.mention} Generating images in thread, can take ~1 minute...')
 
                 loop = asyncio.get_running_loop()
                 result = await loop.run_in_executor(None, deepfloyd_stage1, prompt)  
@@ -130,7 +130,6 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
         print(f"Error: {e}")
         await message.remove_reaction('<a:loading:1114111677990981692>', client.user)
         await message.add_reaction('<:disagree:1098628957521313892>')
-        #await thread.send(f"Error: {e} <@811235357663297546> (continue_falcon error)")
 
 def load_image(png_files, stage_1_results, png_file_index):
     """Opens images as variables so we can combine them later"""
@@ -260,7 +259,6 @@ async def falcon(interaction: discord.Interaction, prompt: str):
 
     except Exception as e:
         print(f"Error: {e}")
-        #await thread.send(f"{e} cc <@811235357663297546> (falconprivate error)") 
 
 async def continue_falcon(message):
     """Continues a given conversation based on chathistory"""
