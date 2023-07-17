@@ -101,7 +101,7 @@ async def deepfloydif(interaction: discord.Interaction, prompt: str):
                 result = await loop.run_in_executor(None, deepfloyd_stage1, prompt)  
                 stage_1_results = result[0]
                 stage_1_result_path = result[2]
-                partial_path = stage_1_result_path[5:]
+                partial_path = pathlib.Path(stage_1_result_path).name
                 png_files = list(glob.glob(f"{stage_1_results}/**/*.png"))
 
                 if png_files:
