@@ -50,7 +50,7 @@ async def on_message(message):
     """Checks channel and continues Falcon conversation if it's the right Discord Thread"""
     try:
         await continue_falcon(message)
-        await message.remove_reaction('🔁', client.user) # test=🔁  hf=🔁  
+        #await message.remove_reaction('🔁', client.user) # test=🔁  hf=🔁  
     except Exception as e:
         print(f"Error: {e}")
 
@@ -77,8 +77,11 @@ async def on_reaction_add(reaction, user):
 def run_bot():
     client.run(DISCORD_TOKEN)
 threading.Thread(target=run_bot).start()
-def greet(name):
-    return "Hello " + name + "!"
-demo = gr.Interface(fn=greet, inputs="text", outputs="text")
+with gr.Blocks() as demo:
+    gr.Markdown("""
+    # Huggingbots Server
+    This space hosts the huggingbots discord bot.
+    Currently supported models are Falcon and DeepfloydIF
+    """)
 demo.queue(concurrency_count=20)
 demo.launch()
