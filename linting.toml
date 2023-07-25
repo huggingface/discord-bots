@@ -1,0 +1,3 @@
+[tool.ruff.check]
+# Ignore E501 (line too long) rule
+ignore = ["E501"]
