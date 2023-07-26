@@ -9,9 +9,7 @@ from deepfloydif import deepfloydif_stage_1
 from deepfloydif import deepfloydif_stage_2_react_check
 
 # HF GUILD SETTINGS
-MY_GUILD_ID = (
-    1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
-)
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
 MY_GUILD = discord.Object(id=MY_GUILD_ID)
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 
@@ -39,9 +37,7 @@ async def on_ready():
 
 
 @client.tree.command()
-@app_commands.describe(
-    prompt="Enter some text to chat with the bot! Like this: /falcon Hello, how are you?"
-)
+@app_commands.describe(prompt="Enter some text to chat with the bot! Like this: /falcon Hello, how are you?")
 async def falcon(interaction: discord.Interaction, prompt: str):
     """Command that begins a new conversation with Falcon"""
     try:
@@ -61,9 +57,7 @@ async def on_message(message):
 
 
 @client.tree.command()
-@app_commands.describe(
-    prompt="Enter a prompt to generate an image! Can generate realistic text, too!"
-)
+@app_commands.describe(prompt="Enter a prompt to generate an image! Can generate realistic text, too!")
 async def deepfloydif(interaction: discord.Interaction, prompt: str):
     """DeepfloydIF stage 1 generation"""
     try:
