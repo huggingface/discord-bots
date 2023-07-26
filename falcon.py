@@ -7,7 +7,14 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 falcon_userid_threadid_dictionary = {}
 threadid_conversation = {}
 # Instructions are for Falcon-chat and can be found here:  https://huggingface.co/spaces/HuggingFaceH4/falcon-chat
-instructions = "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a human user, called User. In the following interactions, User and Falcon will converse in natural language, and Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The conversation begins."
+instructions = (
+    "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a"
+    " human user, called User. In the following interactions, User and Falcon will converse in natural language, and"
+    " Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built"
+    " by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always"
+    " attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The"
+    " conversation begins."
+)
 falcon_client = Client("HuggingFaceH4/falcon-chat", HF_TOKEN)
 
 BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
@@ -64,7 +71,8 @@ async def try_falcon(interaction, prompt):
                 message = await channel.send("Creating thread...")
                 thread = await message.create_thread(name=prompt, auto_archive_duration=60)  # interaction.user
                 await thread.send(
-                    "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon model and system prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]"
+                    "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon model and system"
+                    " prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]"
                 )
 
                 if os.environ.get("TEST_ENV") == "True":
