@@ -15,7 +15,7 @@ DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 
 
 class MyClient(discord.Client):
-    """This structure allows slash commands to work instantly (instead of needing to sync global commands for up to an hour)"""
+    """This structure allows slash commands to work instantly."""
 
     def __init__(self, *, intents: discord.Intents):
         super().__init__(intents=intents)
