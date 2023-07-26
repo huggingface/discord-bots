@@ -27,7 +27,7 @@ async def waitjob(job):
 
 
 def falcon_initial_generation(prompt, instructions, thread):
-    """Solves two problems at once; 1) The Slash command + job.submit interaction, and 2) the need for job.submit in order to locate the full generated text"""
+    """Solves two problems at once; 1) The Slash command + job.submit interaction, and 2) the need for job.submit."""
     global threadid_conversation
 
     chathistory = falcon_client.predict(fn_index=5)
