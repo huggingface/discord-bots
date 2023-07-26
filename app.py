@@ -84,12 +84,10 @@ def run_bot():
 
 threading.Thread(target=run_bot).start()
 with gr.Blocks() as demo:
-    gr.Markdown(
-        """
+    gr.Markdown("""
     # Huggingbots Server
     This space hosts the huggingbots discord bot.
     Currently supported models are Falcon and DeepfloydIF
-    """
-    )
+    """)
 demo.queue(concurrency_count=20)
 demo.launch()
