@@ -2,7 +2,6 @@ from gradio_client import Client
 import os
 import asyncio
 import json
-from concurrent.futures import wait
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 falcon_userid_threadid_dictionary = {}
@@ -19,6 +18,11 @@ FALCON_CHANNEL_ID = (
 )
 
 
+async def waitjob(job):
+    while not job.done():
+        await asyncio.sleep(0.2)
+
+
 def falcon_initial_generation(prompt, instructions, thread):
     """Solves two problems at once; 1) The Slash command + job.submit interaction, and 2) the need for job.submit in order to locate the full generated text"""
     global threadid_conversation
@@ -30,26 +34,28 @@ def falcon_initial_generation(prompt, instructions, thread):
     job = falcon_client.submit(
         prompt, chathistory, instructions, temperature, p_nucleus_sampling, fn_index=1
     )
-    wait([job])
-    if os.environ.get("TEST_ENV") == "True":
-        print("falcon text gen job done")
-    file_paths = job.outputs()
-    print(file_paths)
-    full_generation = file_paths[-1]
-    print(full_generation)
-    with open(full_generation, "r") as file:
-        data = json.load(file)
-        print(data)
-    output_text = data[-1][-1]
-    threadid_conversation[thread.id] = full_generation
-    if len(output_text) > 1300:
-        output_text = (
-            output_text[:1300]
-            + "...\nTruncating response to 2000 characters due to discord api limits."
-        )
-    if os.environ.get("TEST_ENV") == "True":
-        print(output_text)
-    return output_text
+    while job.done() is False:
+        pass
+    else:
+        if os.environ.get("TEST_ENV") == "True":
+            print("falcon text gen job done")
+        file_paths = job.outputs()
+        print(file_paths)
+        full_generation = file_paths[-1]
+        print(full_generation)
+        with open(full_generation, "r") as file:
+            data = json.load(file)
+            print(data)
+        output_text = data[-1][-1]
+        threadid_conversation[thread.id] = full_generation
+        if len(output_text) > 1300:
+            output_text = (
+                output_text[:1300]
+                + "...\nTruncating response to 2000 characters due to discord api limits."
+            )
+        if os.environ.get("TEST_ENV") == "True":
+            print(output_text)
+        return output_text
 
 
 async def try_falcon(interaction, prompt):
@@ -118,7 +124,7 @@ async def continue_falcon(message):
                         p_nucleus_sampling,
                         fn_index=1,
                     )
-                    wait([job])
+                    await waitjob(job)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Continue_falcon job done")
                     file_paths = job.outputs()
