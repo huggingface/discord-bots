@@ -88,7 +88,8 @@ async def deepfloydif_stage_1(interaction, prompt, client):
                 message = await channel.send("DeepfloydIF Thread")
                 thread = await message.create_thread(name=f"{prompt}", auto_archive_duration=60)
                 await thread.send(
-                    "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
+                    "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
+                    " DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
                 )
                 await thread.send(f"{interaction.user.mention} Generating images in thread, can take ~1 minute...")
 
