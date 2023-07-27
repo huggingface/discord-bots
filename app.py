@@ -74,9 +74,6 @@ async def on_reaction_add(reaction, user):
         print(f"Error: {e} (known error, does not cause issues, low priority)")
 
 
-
-
-
 def run_bot():
     client.run(DISCORD_TOKEN)
 
