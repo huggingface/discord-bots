@@ -86,6 +86,7 @@ def combine_images(png_files, stage_1_images, partial_path):
     combined_image.save(combined_image_path)
     return combined_image_path
 
+
 async def deepfloydif_stage_1(interaction, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
