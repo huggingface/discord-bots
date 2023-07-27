@@ -13,7 +13,6 @@ deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
 DEEPFLOYDIF_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) else 1119313215675973714
 
-
 def deepfloydif_stage_1_inference(prompt):
     """Generates an image based on a prompt"""
     negative_prompt = ""
@@ -182,7 +181,9 @@ async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling, thread):
 
         # run blocking function in executor
         loop = asyncio.get_running_loop()
-        result_path = await loop.run_in_executor(None, deepfloydif_stage_2_inference, index, path_for_stage_2_upscaling)
+        result_path = await loop.run_in_executor(
+            None, deepfloydif_stage_2_inference, index, path_for_stage_2_upscaling
+        )
 
         with open(result_path, "rb") as f:
             await thread.send("Here is the upscaled image!", file=discord.File(f, "result.png"))
