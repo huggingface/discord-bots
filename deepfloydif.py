@@ -73,6 +73,19 @@ def load_image(png_files, stage_1_images):
     return results
 
 
+def combine_images(png_files, stage_1_images, partial_path):
+    if os.environ.get("TEST_ENV") == "True":
+        print("Combining images for deepfloydif_stage_1")
+    images = load_image(png_files, stage_1_images)
+    combined_image = Image.new("RGB", (images[0].width * 2, images[0].height * 2))
+    combined_image.paste(images[0], (0, 0))
+    combined_image.paste(images[1], (images[0].width, 0))
+    combined_image.paste(images[2], (0, images[0].height))
+    combined_image.paste(images[3], (images[0].width, images[0].height))
+    combined_image_path = os.path.join(stage_1_images, f"{partial_path}.png")
+    combined_image.save(combined_image_path)
+    return combined_image_path
+
 async def deepfloydif_stage_1(interaction, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
@@ -100,17 +113,7 @@ async def deepfloydif_stage_1(interaction, prompt, client):
                 png_files = list(glob.glob(f"{stage_1_images}/**/*.png"))
 
                 if png_files:
-                    # take all 4 images and combine them into one large 2x2 image (similar to Midjourney)
-                    if os.environ.get("TEST_ENV") == "True":
-                        print("Combining images for deepfloydif_stage_1")
-                    images = load_image(png_files, stage_1_images)
-                    combined_image = Image.new("RGB", (images[0].width * 2, images[0].height * 2))
-                    combined_image.paste(images[0], (0, 0))
-                    combined_image.paste(images[1], (images[0].width, 0))
-                    combined_image.paste(images[2], (0, images[0].height))
-                    combined_image.paste(images[3], (images[0].width, images[0].height))
-                    combined_image_path = os.path.join(stage_1_images, f"{partial_path}.png")
-                    combined_image.save(combined_image_path)
+                    combined_image_path = combine_images(png_files, stage_1_images, partial_path)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Images combined for deepfloydif_stage_1")
                     with open(combined_image_path, "rb") as f:
