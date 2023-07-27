@@ -79,7 +79,7 @@ async def deepfloydif_stage_1(interaction, prompt, client):
         if interaction.user.id != BOT_USER_ID:
             if interaction.channel.id == DEEPFLOYDIF_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
-                    print("Safetychecks passed for deepfloydif_stage_1")
+                    print("Safety checks passed for deepfloydif_stage_1")
                 await interaction.response.send_message("Working on it!")
                 channel = interaction.channel
                 # interaction.response message can't be used to create a thread, so we create another message
