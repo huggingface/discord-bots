@@ -76,8 +76,6 @@ def load_image(png_files, stage_1_images):
 async def deepfloydif_stage_1(interaction, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
-        # global BOT_USER_ID
-        # global DEEPFLOYDIF_CHANNEL_ID
         if interaction.user.id != BOT_USER_ID:
             if interaction.channel.id == DEEPFLOYDIF_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
