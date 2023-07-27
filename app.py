@@ -74,7 +74,7 @@ async def on_reaction_add(reaction, user):
         print(f"Error: {e} (known error, does not cause issues, low priority)")
 
 
-"""This allows us to run the Discord bot in a Python thread"""
+
 
 
 def run_bot():
@@ -82,6 +82,7 @@ def run_bot():
 
 
 threading.Thread(target=run_bot).start()
+"""This allows us to run the Discord bot in a Python thread"""
 with gr.Blocks() as demo:
     gr.Markdown("""
     # Huggingbots Server
