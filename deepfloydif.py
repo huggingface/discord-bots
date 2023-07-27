@@ -13,6 +13,7 @@ deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
 DEEPFLOYDIF_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) else 1119313215675973714
 
+
 def deepfloydif_stage_1_inference(prompt):
     """Generates an image based on a prompt"""
     negative_prompt = ""
