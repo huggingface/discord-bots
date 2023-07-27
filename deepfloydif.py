@@ -25,7 +25,7 @@ def deepfloydif_stage_1_inference(prompt):
     (
         stage_1_results,
         stage_1_param_path,
-        stage_1_result_path,
+        path_for_stage_2_upscaling,
     ) = deepfloydif_client.predict(
         prompt,
         negative_prompt,
@@ -36,10 +36,10 @@ def deepfloydif_stage_1_inference(prompt):
         number_of_inference_steps,
         api_name="/generate64",
     )
-    return [stage_1_results, stage_1_param_path, stage_1_result_path]
+    return [stage_1_results, stage_1_param_path, path_for_stage_2_upscaling]
 
 
-def deepfloydif_stage_2_inference(index, stage_1_result_path):
+def deepfloydif_stage_2_inference(index, path_for_stage_2_upscaling):
     """Upscales one of the images from deepfloydif_stage_1_inference based on the chosen index"""
     selected_index_for_stage_2 = index
     seed_2 = 0
@@ -47,7 +47,7 @@ def deepfloydif_stage_2_inference(index, stage_1_result_path):
     custom_timesteps_2 = "smart50"
     number_of_inference_steps_2 = 50
     result_path = deepfloydif_client.predict(
-        stage_1_result_path,
+        path_for_stage_2_upscaling,
         selected_index_for_stage_2,
         seed_2,
         guidance_scale_2,
@@ -95,10 +95,10 @@ async def deepfloydif_stage_1(interaction, prompt, client):
 
                 loop = asyncio.get_running_loop()
                 result = await loop.run_in_executor(None, deepfloydif_stage_1_inference, prompt)
-                stage_1_results = result[0]
-                stage_1_result_path = result[2]
+                stage_1_images = result[0]
+                path_for_stage_2_upscaling = result[2]
 
-                partial_path = pathlib.Path(stage_1_result_path).name
+                partial_path = pathlib.Path(path_for_stage_2_upscaling).name
                 png_files = list(glob.glob(f"{stage_1_results}/**/*.png"))
 
                 if png_files:
@@ -154,18 +154,18 @@ async def deepfloydif_stage_2_react_check(reaction, user):
                             index = 2
                         elif emoji == "↘️":
                             index = 3
-                        stage_1_result_path = full_path
+                        path_for_stage_2_upscaling = full_path
                         thread = reaction.message.channel
                         await deepfloydif_stage_2(
                             index,
-                            stage_1_result_path,
+                            path_for_stage_2_upscaling,
                             thread,
                         )
     except Exception as e:
         print(f"Error: {e} (known error, does not cause issues, low priority)")
 
 
-async def deepfloydif_stage_2(index: int, stage_1_result_path, thread):
+async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling, thread):
     """upscaling function for images generated using /deepfloydif"""
     try:
         if os.environ.get("TEST_ENV") == "True":
@@ -182,7 +182,7 @@ async def deepfloydif_stage_2(index: int, stage_1_result_path, thread):
 
         # run blocking function in executor
         loop = asyncio.get_running_loop()
-        result_path = await loop.run_in_executor(None, deepfloydif_stage_2_inference, index, stage_1_result_path)
+        result_path = await loop.run_in_executor(None, deepfloydif_stage_2_inference, index, path_for_stage_2_upscaling)
 
         with open(result_path, "rb") as f:
             await thread.send("Here is the upscaled image!", file=discord.File(f, "result.png"))
