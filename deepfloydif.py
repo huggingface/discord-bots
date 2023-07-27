@@ -23,7 +23,7 @@ def deepfloydif_stage_1_inference(prompt):
     custom_timesteps_1 = "smart50"
     number_of_inference_steps = 50
     (
-        stage_1_results,
+        stage_1_images,
         stage_1_param_path,
         path_for_stage_2_upscaling,
     ) = deepfloydif_client.predict(
@@ -36,7 +36,7 @@ def deepfloydif_stage_1_inference(prompt):
         number_of_inference_steps,
         api_name="/generate64",
     )
-    return [stage_1_results, stage_1_param_path, path_for_stage_2_upscaling]
+    return [stage_1_images, stage_1_param_path, path_for_stage_2_upscaling]
 
 
 def deepfloydif_stage_2_inference(index, path_for_stage_2_upscaling):
@@ -64,11 +64,11 @@ async def react_1234(reaction_emojis, combined_image_dfif):
         await combined_image_dfif.add_reaction(emoji)
 
 
-def load_image(png_files, stage_1_results):
+def load_image(png_files, stage_1_images):
     """Opens images as variables so we can combine them later"""
     results = []
     for file in png_files:
-        png_path = os.path.join(stage_1_results, file)
+        png_path = os.path.join(stage_1_images, file)
         results.append(Image.open(png_path))
     return results
 
@@ -99,19 +99,19 @@ async def deepfloydif_stage_1(interaction, prompt, client):
                 path_for_stage_2_upscaling = result[2]
 
                 partial_path = pathlib.Path(path_for_stage_2_upscaling).name
-                png_files = list(glob.glob(f"{stage_1_results}/**/*.png"))
+                png_files = list(glob.glob(f"{stage_1_images}/**/*.png"))
 
                 if png_files:
                     # take all 4 images and combine them into one large 2x2 image (similar to Midjourney)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Combining images for deepfloydif_stage_1")
-                    images = load_image(png_files, stage_1_results)
+                    images = load_image(png_files, stage_1_images)
                     combined_image = Image.new("RGB", (images[0].width * 2, images[0].height * 2))
                     combined_image.paste(images[0], (0, 0))
                     combined_image.paste(images[1], (images[0].width, 0))
                     combined_image.paste(images[2], (0, images[0].height))
                     combined_image.paste(images[3], (images[0].width, images[0].height))
-                    combined_image_path = os.path.join(stage_1_results, f"{partial_path}.png")
+                    combined_image_path = os.path.join(stage_1_images, f"{partial_path}.png")
                     combined_image.save(combined_image_path)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Images combined for deepfloydif_stage_1")
