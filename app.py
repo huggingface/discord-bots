@@ -51,7 +51,6 @@ async def on_message(message):
     """Checks channel and continues Falcon conversation if it's the right Discord Thread"""
     try:
         await continue_falcon(message)
-        # await message.remove_reaction('🔁', client.user) # test=🔁  hf=🔁
     except Exception as e:
         print(f"Error: {e}")
 
