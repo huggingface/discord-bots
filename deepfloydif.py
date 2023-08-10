@@ -10,8 +10,8 @@ import pathlib
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 
-BOT_USER_ID = 1102236653545861151
-DEEPFLOYDIF_CHANNEL_ID = 1100458786826747945  # bot test
+BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
+DEEPFLOYDIF_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) else 1119313215675973714
 
 
 def deepfloydif_stage_1_inference(prompt):
@@ -87,30 +87,26 @@ def combine_images(png_files, stage_1_images, partial_path):
     return combined_image_path
 
 
-async def deepfloydif_stage_1(ctx, prompt, client):
+async def deepfloydif_stage_1(interaction, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
-        if ctx.author.id != BOT_USER_ID:
-            if ctx.channel.id == DEEPFLOYDIF_CHANNEL_ID:
+        if interaction.user.id != BOT_USER_ID:
+            if interaction.channel.id == DEEPFLOYDIF_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
                     print("Safety checks passed for deepfloydif_stage_1")
+                await interaction.response.send_message("Working on it!")
+                channel = interaction.channel
                 # interaction.response message can't be used to create a thread, so we create another message
-                message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
-                thread = await message.create_thread(
-                    name=f"{prompt}", auto_archive_duration=60
-                )
+                message = await channel.send("DeepfloydIF Thread")
+                thread = await message.create_thread(name=f"{prompt}", auto_archive_duration=60)
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
                     " DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
                 )
-                await thread.send(
-                    f"{ctx.author.mention} Generating images in thread, can take ~1 minute..."
-                )
+                await thread.send(f"{interaction.user.mention} Generating images in thread, can take ~1 minute...")
 
                 loop = asyncio.get_running_loop()
-                result = await loop.run_in_executor(
-                    None, deepfloydif_stage_1_inference, prompt
-                )
+                result = await loop.run_in_executor(None, deepfloydif_stage_1_inference, prompt)
                 stage_1_images = result[0]
                 path_for_stage_2_upscaling = result[2]
 
@@ -118,23 +114,18 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                 png_files = list(glob.glob(f"{stage_1_images}/**/*.png"))
 
                 if png_files:
-                    combined_image_path = combine_images(
-                        png_files, stage_1_images, partial_path
-                    )
+                    combined_image_path = combine_images(png_files, stage_1_images, partial_path)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Images combined for deepfloydif_stage_1")
                     with open(combined_image_path, "rb") as f:
                         combined_image_dfif = await thread.send(
-                            f"{ctx.author.mention} React with the image number you want to upscale!",
+                            f"{interaction.user.mention} React with the image number you want to upscale!",
                             file=discord.File(f, f"{partial_path}.png"),
                         )
                     emoji_list = ["↖️", "↗️", "↙️", "↘️"]
                     await react_1234(emoji_list, combined_image_dfif)
                 else:
-                    await thread.send(
-                        f"{ctx.author.mention} No PNG files were found, cannot post them!"
-                    )
-
+                    await thread.send(f"{interaction.user.mention} No PNG files were found, cannot post them!")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -198,9 +189,7 @@ async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling, thread):
         )
 
         with open(result_path, "rb") as f:
-            await thread.send(
-                "Here is the upscaled image!", file=discord.File(f, "result.png")
-            )
+            await thread.send("Here is the upscaled image!", file=discord.File(f, "result.png"))
         await thread.edit(archived=True)
     except Exception as e:
         print(f"Error: {e}")
