@@ -1,5 +1,4 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
 import gradio as gr
 import os
@@ -10,25 +9,25 @@ from deepfloydif import deepfloydif_stage_1
 from deepfloydif import deepfloydif_stage_2_react_check
 
 # HF GUILD SETTINGS
-MY_GUILD_ID = (
-    1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
-)
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
 MY_GUILD = discord.Object(id=MY_GUILD_ID)
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 
 
-class Bot(commands.Bot):
+class MyClient(discord.Client):
     """This structure allows slash commands to work instantly."""
 
-    def __init__(self):
-        super().__init__(command_prefix="/", intents=discord.Intents.all())
+    def __init__(self, *, intents: discord.Intents):
+        super().__init__(intents=intents)
+        self.tree = app_commands.CommandTree(self)
 
     async def setup_hook(self):
-        await self.tree.sync(guild=discord.Object(MY_GUILD_ID))
-        print(f"Synced slash commands for {self.user}.")
+        # This copies the global commands over to our guild
+        self.tree.copy_global_to(guild=MY_GUILD)
+        await self.tree.sync(guild=MY_GUILD)
 
 
-client = Bot()
+client = MyClient(intents=discord.Intents.all())
 
 
 @client.event
@@ -37,16 +36,12 @@ async def on_ready():
     print("------")
 
 
-@client.hybrid_command(
-    name="falcon",
-    with_app_command=True,
-    description="Enter some text to chat with the bot! Like this: /falcon Hello, how are you?",
-)
-@app_commands.guilds(MY_GUILD)
-async def falcon(ctx, prompt: str):
+@client.tree.command()
+@app_commands.describe(prompt="Enter some text to chat with the bot! Like this: /falcon Hello, how are you?")
+async def falcon(interaction: discord.Interaction, prompt: str):
     """Command that begins a new conversation with Falcon"""
     try:
-        await try_falcon(ctx, prompt)
+        await try_falcon(interaction, prompt)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -60,16 +55,12 @@ async def on_message(message):
         print(f"Error: {e}")
 
 
-@client.hybrid_command(
-    name="deepfloydif",
-    with_app_command=True,
-    description="Enter a prompt to generate an image! Can generate realistic text, too!",
-)
-@app_commands.guilds(MY_GUILD)
-async def deepfloydif(ctx, prompt: str):
+@client.tree.command()
+@app_commands.describe(prompt="Enter a prompt to generate an image! Can generate realistic text, too!")
+async def deepfloydif(interaction: discord.Interaction, prompt: str):
     """DeepfloydIF stage 1 generation"""
     try:
-        await deepfloydif_stage_1(ctx, prompt, client)
+        await deepfloydif_stage_1(interaction, prompt, client)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -90,12 +81,10 @@ def run_bot():
 threading.Thread(target=run_bot).start()
 """This allows us to run the Discord bot in a Python thread"""
 with gr.Blocks() as demo:
-    gr.Markdown(
-        """
+    gr.Markdown("""
     # Huggingbots Server
     This space hosts the huggingbots discord bot.
     Currently supported models are Falcon and DeepfloydIF
-    """
-    )
+    """)
 demo.queue(concurrency_count=20)
 demo.launch()
