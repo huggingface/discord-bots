@@ -50,10 +50,7 @@ def falcon_initial_generation(prompt, instructions, thread):
         output_text = data[-1][-1]
         threadid_conversation[thread.id] = full_generation
         if len(output_text) > 1300:
-            output_text = (
-                output_text[:1300]
-                + "...\nTruncating response to 2000 characters due to discord api limits."
-            )
+            output_text = output_text[:1300] + "...\nTruncating response to 2000 characters due to discord api limits."
         if os.environ.get("TEST_ENV") == "True":
             print(output_text)
         return output_text
@@ -95,8 +92,9 @@ async def continue_falcon(message):
         if not message.author.bot:
             global falcon_userid_threadid_dictionary  # tracks userid-thread existence
             if message.channel.id in falcon_userid_threadid_dictionary:  # is this a valid thread?
-                if falcon_userid_threadid_dictionary[message.channel.id] == message.author.id:  # more than that - is this specifically the right user for this thread?
-                    if os.environ.get("TEST_ENV") == "True":
+                if (
+                    falcon_userid_threadid_dictionary[message.channel.id] == message.author.id
+                ):  # more than that - is this specifically the right user for this thread?
                         print("Safetychecks passed for continue_falcon")
                     global instructions
                     global threadid_conversation
@@ -127,7 +125,10 @@ async def continue_falcon(message):
                         output_text = data[-1][-1]
                     threadid_conversation[message.channel.id] = full_generation  # overwrite the old file
                     if len(output_text) > 1300:
-                        output_text = output_text[:1300] + "...\nTruncating response to 2000 characters due to discord api limits."
+                        output_text = (
+                            output_text[:1300]
+                            + "...\nTruncating response to 2000 characters due to discord api limits."
+                        )
                     await message.reply(output_text)
     except Exception as e:
         print(f"continue_falcon Error: {e}")
