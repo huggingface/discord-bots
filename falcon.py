@@ -128,7 +128,6 @@ async def continue_falcon(message):
                     threadid_conversation[message.channel.id] = full_generation  # overwrite the old file
                     if len(output_text) > 1300:
                         output_text = output_text[:1300] + "...\nTruncating response to 2000 characters due to discord api limits."
-                        )
                     await message.reply(output_text)
     except Exception as e:
         print(f"continue_falcon Error: {e}")
