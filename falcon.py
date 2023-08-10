@@ -92,10 +92,8 @@ async def continue_falcon(message):
         if not message.author.bot:
             global falcon_userid_threadid_dictionary  # tracks userid-thread existence
             if message.channel.id in falcon_userid_threadid_dictionary:  # is this a valid thread?
-                if (
-                    falcon_userid_threadid_dictionary[message.channel.id] == message.author.id
-                ):  # more than that - is this specifically the right user for this thread?
-                        print("Safetychecks passed for continue_falcon")
+                if falcon_userid_threadid_dictionary[message.channel.id] == message.author.id
+                    print("Safetychecks passed for continue_falcon")
                     global instructions
                     global threadid_conversation
                     await message.add_reaction("🔁")
