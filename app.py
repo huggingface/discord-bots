@@ -10,9 +10,7 @@ from deepfloydif import deepfloydif_stage_1
 from deepfloydif import deepfloydif_stage_2_react_check
 
 # HF GUILD SETTINGS
-MY_GUILD_ID = (
-    1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
-)
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
 MY_GUILD = discord.Object(id=MY_GUILD_ID)
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 
@@ -90,12 +88,10 @@ def run_bot():
 threading.Thread(target=run_bot).start()
 """This allows us to run the Discord bot in a Python thread"""
 with gr.Blocks() as demo:
-    gr.Markdown(
-        """
+    gr.Markdown("""
     # Huggingbots Server
     This space hosts the huggingbots discord bot.
     Currently supported models are Falcon and DeepfloydIF
-    """
-    )
+    """)
 demo.queue(concurrency_count=20)
 demo.launch()
