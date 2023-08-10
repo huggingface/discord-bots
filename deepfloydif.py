@@ -96,21 +96,15 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                     print("Safety checks passed for deepfloydif_stage_1")
                 # interaction.response message can't be used to create a thread, so we create another message
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
-                thread = await message.create_thread(
-                    name=f"{prompt}", auto_archive_duration=60
-                )
+                thread = await message.create_thread(name=f"{prompt}", auto_archive_duration=60)
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
                     " DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
                 )
-                await thread.send(
-                    f"{ctx.author.mention} Generating images in thread, can take ~1 minute..."
-                )
+                await thread.send(f"{ctx.author.mention} Generating images in thread, can take ~1 minute...")
 
                 loop = asyncio.get_running_loop()
-                result = await loop.run_in_executor(
-                    None, deepfloydif_stage_1_inference, prompt
-                )
+                result = await loop.run_in_executor(None, deepfloydif_stage_1_inference, prompt)
                 stage_1_images = result[0]
                 path_for_stage_2_upscaling = result[2]
 
@@ -118,9 +112,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                 png_files = list(glob.glob(f"{stage_1_images}/**/*.png"))
 
                 if png_files:
-                    combined_image_path = combine_images(
-                        png_files, stage_1_images, partial_path
-                    )
+                    combined_image_path = combine_images(png_files, stage_1_images, partial_path)
                     if os.environ.get("TEST_ENV") == "True":
                         print("Images combined for deepfloydif_stage_1")
                     with open(combined_image_path, "rb") as f:
@@ -131,9 +123,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                     emoji_list = ["↖️", "↗️", "↙️", "↘️"]
                     await react_1234(emoji_list, combined_image_dfif)
                 else:
-                    await thread.send(
-                        f"{ctx.author.mention} No PNG files were found, cannot post them!"
-                    )
+                    await thread.send(f"{ctx.author.mention} No PNG files were found, cannot post them!")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -198,9 +188,7 @@ async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling, thread):
         )
 
         with open(result_path, "rb") as f:
-            await thread.send(
-                "Here is the upscaled image!", file=discord.File(f, "result.png")
-            )
+            await thread.send("Here is the upscaled image!", file=discord.File(f, "result.png"))
         await thread.edit(archived=True)
     except Exception as e:
         print(f"Error: {e}")
