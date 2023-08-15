@@ -1,13 +1,12 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
-import gradio as gr
 import os
 import threading
-from falcon import try_falcon
-from falcon import continue_falcon
-from deepfloydif import deepfloydif_stage_1
-from deepfloydif import deepfloydif_stage_2_react_check
+
+import discord
+import gradio as gr
+from deepfloydif import deepfloydif_stage_1, deepfloydif_stage_2_react_check
+from discord import app_commands
+from discord.ext import commands
+from falcon import continue_falcon, try_falcon
 from musicgen import music_create
 
 # HF GUILD SETTINGS
