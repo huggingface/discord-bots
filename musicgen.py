@@ -3,7 +3,7 @@ from gradio_client import Client
 import os
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_audio
 
-MUSIC_CHANNEL_ID = 1140990231730987058 # real musicgen channel
+MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 
 musicgen = Client("huggingface-projects/MusicGen", hf_token=os.getenv("HF_TOKEN"))
 
