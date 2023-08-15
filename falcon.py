@@ -17,8 +17,8 @@ instructions = (
 )
 falcon_client = Client("HuggingFaceH4/falcon-chat", HF_TOKEN)
 
-BOT_USER_ID = 1102236653545861151
-FALCON_CHANNEL_ID = 1100458786826747945
+BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
+FALCON_CHANNEL_ID = 1079459939405279232 if os.getenv("TEST_ENV", False) else 1119313248056004729
 
 
 async def waitjob(job):
