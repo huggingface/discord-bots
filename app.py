@@ -73,10 +73,7 @@ async def deepfloydif(ctx, prompt: str):
         print(f"Error: {e}")
 
 
-@client.hybrid_command(
-    name="musicgen", 
-    with_app_command=True, 
-    description="Enter a prompt to generate music!")
+@client.hybrid_command(name="musicgen", with_app_command=True, description="Enter a prompt to generate music!")
 @app_commands.guilds(MY_GUILD)
 async def musicgen(ctx, prompt: str):
     """Generates music based on a prompt"""
