@@ -5,7 +5,7 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_audio
 
 MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 
-musicgen = Client("huggingface-projects/MusicGen", hf_token=os.getenv("HF_TOKEN"))
+musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
 
 
 async def music_create(ctx, prompt):
@@ -19,25 +19,9 @@ async def music_create(ctx, prompt):
                 "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The MusicGen"
                 " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
             )
-
-            model = "melody"
-            samplefile = "https://github.com/gradio-app/gradio/raw/main/test/test_files/audio_sample.wav"
-            duration = 10
-            topk = 250
-            topp = 0
-            temperature = 1
-            classifier_free_guidance = 3
-
             job = musicgen.submit(
-                model,
-                prompt,
-                samplefile,
-                duration,
-                topk,
-                topp,
-                temperature,
-                classifier_free_guidance,
-                fn_index=1,
+                prompt, 
+                api_name="/predict"
             )
             while not job.done():
                 pass
