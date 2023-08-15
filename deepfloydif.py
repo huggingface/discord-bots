@@ -1,11 +1,12 @@
-import discord
-from gradio_client import Client
-import os
-import random
-from PIL import Image
 import asyncio
 import glob
+import os
 import pathlib
+import random
+
+import discord
+from gradio_client import Client
+from PIL import Image
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
