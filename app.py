@@ -8,6 +8,7 @@ from falcon import try_falcon
 from falcon import continue_falcon
 from deepfloydif import deepfloydif_stage_1
 from deepfloydif import deepfloydif_stage_2_react_check
+from musicgen import music_create
 
 # HF GUILD SETTINGS
 MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
@@ -68,6 +69,19 @@ async def deepfloydif(ctx, prompt: str):
     """DeepfloydIF stage 1 generation"""
     try:
         await deepfloydif_stage_1(ctx, prompt, client)
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+@client.hybrid_command(
+    name="musicgen", 
+    with_app_command=True, 
+    description="Enter a prompt to generate music!")
+@app_commands.guilds(MY_GUILD)
+async def musicgen(ctx, prompt: str):
+    """Generates music based on a prompt"""
+    try:
+        await music_create(ctx, prompt)
     except Exception as e:
         print(f"Error: {e}")
 
