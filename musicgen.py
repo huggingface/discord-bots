@@ -20,6 +20,7 @@ async def music_create(ctx, prompt):
                 "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The MusicGen"
                 " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
             )
+            await thread.send("Please wait for the song to finish generating before generating a new one!")
             job = musicgen.submit(prompt, api_name="/predict")
             while not job.done():
                 pass
