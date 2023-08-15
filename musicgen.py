@@ -1,6 +1,6 @@
+import os
 import discord
 from gradio_client import Client
-import os
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_audio
 
 MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
@@ -19,10 +19,7 @@ async def music_create(ctx, prompt):
                 "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The MusicGen"
                 " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
             )
-            job = musicgen.submit(
-                prompt, 
-                api_name="/predict"
-            )
+            job = musicgen.submit(prompt, api_name="/predict")
             while not job.done():
                 pass
             input_file = job.outputs()[0]
