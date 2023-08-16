@@ -34,9 +34,7 @@ async def music_create(ctx, prompt):
                     print("Safetychecks passed for music_create")
 
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
-                thread = await message.create_thread(
-                    name=prompt, auto_archive_duration=60
-                )
+                thread = await message.create_thread(name=prompt, auto_archive_duration=60)
 
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a beta feature; The MusicGen"
@@ -46,9 +44,7 @@ async def music_create(ctx, prompt):
                     print("Running music_create_job...")
 
                 loop = asyncio.get_running_loop()
-                output_files = await loop.run_in_executor(
-                    None, music_create_job, prompt
-                )
+                output_files = await loop.run_in_executor(None, music_create_job, prompt)
 
                 audio = output_files[0]
                 video = output_files[1]
