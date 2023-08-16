@@ -17,7 +17,7 @@ async def music_create(ctx, prompt):
             thread = await message.create_thread(name=prompt, auto_archive_duration=60)
             # clean this v
             await thread.send(
-                "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The MusicGen"
+                "[DISCLAIMER: HuggingBot is a beta feature; The MusicGen"
                 " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
             )
             await thread.send("Please wait for the song to finish generating before generating a new one!")
