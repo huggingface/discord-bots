@@ -46,8 +46,7 @@ async def music_create(ctx, prompt):
                 loop = asyncio.get_running_loop()
                 output_files = await loop.run_in_executor(None, music_create_job, prompt)
 
-                audio = output_files[0]
-                video = output_files[1]
+                audio, video = files[0], files[1]
 
                 with open(audio, "rb") as file:
                     discord_file = discord.File(file)
