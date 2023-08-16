@@ -5,9 +5,7 @@ from gradio_client import Client
 
 MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 
-musicgen = Client(
-    "huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN")
-)
+musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
 
 
 async def music_create(ctx, prompt):
@@ -21,9 +19,7 @@ async def music_create(ctx, prompt):
                 "[DISCLAIMER: HuggingBot is a beta feature; The MusicGen"
                 " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
             )
-            await thread.send(
-                "Please wait for the song to finish generating before generating a new one!"
-            )
+            await thread.send("Please wait for the song to finish generating before generating a new one!")
             job = musicgen.submit(prompt, api_name="/predict")
             while not job.done():
                 pass
@@ -41,9 +37,7 @@ async def music_create(ctx, prompt):
             await thread.send(file=discord_file)
 
             embed = discord.Embed()
-            embed.set_thumbnail(
-                url="https://abs.twimg.com/icons/apple-touch-icon-192x192.png"
-            )
+            embed.set_thumbnail(url="https://abs.twimg.com/icons/apple-touch-icon-192x192.png")
             embed.add_field(
                 name="Twitter",
                 value="[Share it!](https://twitter.com/compose/tweet)",
