@@ -59,9 +59,15 @@ async def music_create(ctx, prompt):
 
                 embed = discord.Embed()
                 embed.set_thumbnail(url="https://abs.twimg.com/icons/apple-touch-icon-192x192.png")
+                tweet1 = "https://twitter.com/intent/tweet?text="
+                tweet2 = "I%20generated%20this%20audio%20using%20MusicGen"
+                tweet3 = "%20in%20the%20%F0%9F%A4%97%20@huggingface%20Discord!"
+                tweet4 = "%0Ahf.co/join/discord%0APrompt:%20"
+                prompt = prompt.replace(" ", "%20")
+                intent_link = f"{tweet1}{tweet2}{tweet3}{tweet4}{prompt}"
                 embed.add_field(
                     name="Twitter",
-                    value="[Share it!](https://twitter.com/compose/tweet)",
+                    value=f"[Share it!]({intent_link})",
                     inline=True,
                 )
 
