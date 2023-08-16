@@ -1,11 +1,12 @@
-import discord
-from gradio_client import Client
-import os
-import random
-from PIL import Image
 import asyncio
 import glob
+import os
 import pathlib
+import random
+
+import discord
+from gradio_client import Client
+from PIL import Image
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
@@ -87,23 +88,21 @@ def combine_images(png_files, stage_1_images, partial_path):
     return combined_image_path
 
 
-async def deepfloydif_stage_1(interaction, prompt, client):
+async def deepfloydif_stage_1(ctx, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
-        if interaction.user.id != BOT_USER_ID:
-            if interaction.channel.id == DEEPFLOYDIF_CHANNEL_ID:
+        if ctx.author.id != BOT_USER_ID:
+            if ctx.channel.id == DEEPFLOYDIF_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
                     print("Safety checks passed for deepfloydif_stage_1")
-                await interaction.response.send_message("Working on it!")
-                channel = interaction.channel
                 # interaction.response message can't be used to create a thread, so we create another message
-                message = await channel.send("DeepfloydIF Thread")
+                message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
                 thread = await message.create_thread(name=f"{prompt}", auto_archive_duration=60)
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
                     " DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
                 )
-                await thread.send(f"{interaction.user.mention} Generating images in thread, can take ~1 minute...")
+                await thread.send(f"{ctx.author.mention} Generating images in thread, can take ~1 minute...")
 
                 loop = asyncio.get_running_loop()
                 result = await loop.run_in_executor(None, deepfloydif_stage_1_inference, prompt)
@@ -119,13 +118,14 @@ async def deepfloydif_stage_1(interaction, prompt, client):
                         print("Images combined for deepfloydif_stage_1")
                     with open(combined_image_path, "rb") as f:
                         combined_image_dfif = await thread.send(
-                            f"{interaction.user.mention} React with the image number you want to upscale!",
+                            f"{ctx.author.mention} React with the image number you want to upscale!",
                             file=discord.File(f, f"{partial_path}.png"),
                         )
                     emoji_list = ["↖️", "↗️", "↙️", "↘️"]
                     await react_1234(emoji_list, combined_image_dfif)
                 else:
-                    await thread.send(f"{interaction.user.mention} No PNG files were found, cannot post them!")
+                    await thread.send(f"{ctx.author.mention} No PNG files were found, cannot post them!")
+
     except Exception as e:
         print(f"Error: {e}")
 
