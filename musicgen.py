@@ -44,7 +44,7 @@ async def music_create(ctx, prompt):
                     print("Running music_create_job...")
 
                 loop = asyncio.get_running_loop()
-                output_files = await loop.run_in_executor(None, music_create_job, prompt)
+                files = await loop.run_in_executor(None, music_create_job, prompt)
 
                 audio, video = files[0], files[1]
 
