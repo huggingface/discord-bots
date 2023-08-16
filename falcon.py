@@ -67,8 +67,6 @@ async def try_falcon(ctx, prompt):
             if ctx.channel.id == FALCON_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
                     print("Safetychecks passed for try_falcon")
-                # await interaction.response.send_message("Working on it!")
-                # channel = interaction.channel
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
                 thread = await message.create_thread(name=prompt, auto_archive_duration=60)  # interaction.user
                 await thread.send(
