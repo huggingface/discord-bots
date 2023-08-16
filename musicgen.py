@@ -22,24 +22,23 @@ async def music_create(ctx, prompt):
             await thread.send("Please wait for the song to finish generating before generating a new one!")
             job = musicgen.submit(prompt, api_name="/predict")
             while not job.done():
-              pass
+                pass
             files = job.outputs()
             files = files[0]
             audio = files[0]
             video = files[1]
-  
+            
             with open(audio, "rb") as file:
                 discord_file = discord.File(file)
             await thread.send(file=discord_file)
-
+            
             with open(video, "rb") as file:
                 discord_file = discord.File(file)
-            await thread.send(file=discord_file)            
+            await thread.send(file=discord_file)          
 
             embed = discord.Embed()
             embed.set_thumbnail(url="https://abs.twimg.com/icons/apple-touch-icon-192x192.png")
-            embed.add_field(name= "Twitter", 
-                            value="[Share it!](https://twitter.com/compose/tweet)", inline=True)
+            embed.add_field(name="Twitter", value="[Share it!](https://twitter.com/compose/tweet)", inline=True)
 
             await thread.send(embed=embed)
 
