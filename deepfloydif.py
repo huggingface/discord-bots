@@ -99,6 +99,8 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
                 if len(prompt) > 99:
                     small_prompt = prompt[:99]
+                else:
+                    small_prompt = prompt                    
                 thread = await message.create_thread(name=f"{small_prompt}", auto_archive_duration=60)
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
