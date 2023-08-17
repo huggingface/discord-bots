@@ -9,14 +9,6 @@ from discord.ext import commands
 from falcon import continue_falcon, try_falcon
 from musicgen import music_create
 
-""" v1.3 planning
-- print to console errors -> post in thread errors
-- for shareability I think what would work the best is if the video of the waveform also contained the prompt
-- automate dependencies sorting / imports sorting
-- make function names more consistent across falcon, deepfloyd, musicgen
-- make it longer? (more of a space adjustment)
-
-"""
 
 # HF GUILD SETTINGS
 MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
