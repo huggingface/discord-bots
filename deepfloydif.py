@@ -98,8 +98,8 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                 # interaction.response message can't be used to create a thread, so we create another message
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
                 if len(prompt) > 99:
-                    prompt = prompt[:99]
-                thread = await message.create_thread(name=f"{prompt}", auto_archive_duration=60)
+                    small_prompt = prompt[:99]
+                thread = await message.create_thread(name=f"{small_prompt}", auto_archive_duration=60)
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; Additional information on the"
                     " DeepfloydIF model can be found here: https://huggingface.co/spaces/DeepFloyd/IF"
