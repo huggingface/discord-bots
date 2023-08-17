@@ -34,7 +34,9 @@ async def music_create(ctx, prompt):
                     print("Safetychecks passed for music_create")
 
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
-                thread = await message.create_thread(name=prompt, auto_archive_duration=60)
+                if len(prompt) > 99:
+                    small_prompt = prompt[:99]
+                thread = await message.create_thread(name=small_prompt, auto_archive_duration=60)
 
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a beta feature; The MusicGen"
