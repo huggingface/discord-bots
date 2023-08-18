@@ -55,9 +55,7 @@ async def music_create(ctx, prompt):
                     files = job.outputs()
                     media_files = files[0]
                 except QueueError:
-                    await thread.send(
-                        "The gradio space powering this bot is really busy! Please try again later!"
-                    )
+                    await thread.send("The gradio space powering this bot is really busy! Please try again later!")
 
                 audio = media_files[0]
                 video = media_files[1]
