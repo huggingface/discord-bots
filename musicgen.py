@@ -60,7 +60,7 @@ async def music_create(ctx, prompt):
                 output_files = await loop.run_in_executor(None, music_create_job, prompt)
 
                 queue_size = output_files[1]
-                if queue_size > 5:
+                if queue_size > 95:
                     await thread.send(f"Queue is full! Queue size: {queue_size}")
 
                 media_files = output_files[0]
