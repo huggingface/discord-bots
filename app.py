@@ -104,5 +104,6 @@ with gr.Blocks() as demo:
     This space hosts the huggingbots discord bot.
     Currently supported models are Falcon and DeepfloydIF
     """)
-demo.queue(concurrency_count=20)
+demo.queue(concurrency_count=100)
+demo.queue(max_size=100)
 demo.launch()
