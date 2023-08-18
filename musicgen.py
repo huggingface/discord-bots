@@ -5,7 +5,7 @@ import discord
 from gradio_client import Client
 
 
-BOT_USER_ID = 1102236653545861151 # real
+BOT_USER_ID = 1102236653545861151  # real
 MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 
 musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
