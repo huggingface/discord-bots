@@ -16,7 +16,7 @@ audiodlm2 = Client("huggingface-projects/audioldm2-text2audio-text2music", HF_TO
 
 
 def audiodlm2_create_job(prompt):
-    """Generates music based on a given prompt"""
+    """Generates a sound or music based on a given prompt"""
     try:
         random.seed(datetime.now().timestamp())
         guidance_scale = 6  # between 1-6, larger = better, smaller = diverser
