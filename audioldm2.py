@@ -12,32 +12,32 @@ MUSIC_CHANNEL_ID = 1143183148881035365  # real
 
 
 HF_TOKEN = os.getenv("HF_TOKEN")
-audiodlm2 = Client("huggingface-projects/audioldm2-text2audio-text2music", HF_TOKEN)
+audioldm2 = Client("huggingface-projects/audioldm2-text2audio-text2music", HF_TOKEN)
 
 
-def audiodlm2_create_job(prompt):
+def audioldm2_create_job(prompt):
     """Generates a sound or music based on a given prompt"""
     try:
         random.seed(datetime.now().timestamp())
         guidance_scale = 6  # between 1-6, larger = better, smaller = diverser
         seed = random.randint(1, 1000)
         quality_control = 3  # between 1-3, higher = longer compute but better results
-        job = audiodlm2.submit(prompt, guidance_scale, seed, quality_control, fn_index=0)
+        job = audioldm2.submit(prompt, guidance_scale, seed, quality_control, fn_index=0)
         while not job.done():
             pass
         return job
 
     except Exception as e:
-        print(f"audiodlm2_create_job Error: {e}")
+        print(f"audioldm2_create_job Error: {e}")
 
 
-async def audiodlm2_create(ctx, prompt):
-    """Runs audiodlm2_create_job in executor"""
+async def audioldm2_create(ctx, prompt):
+    """Runs audioldm2_create_job in executor"""
     try:
         if ctx.author.id != BOT_USER_ID:
             if ctx.channel.id == MUSIC_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
-                    print("Safetychecks passed for audiodlm2_create")
+                    print("Safetychecks passed for audioldm2_create")
 
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention}")
                 if len(prompt) > 99:
@@ -47,15 +47,15 @@ async def audiodlm2_create(ctx, prompt):
                 thread = await message.create_thread(name=small_prompt, auto_archive_duration=60)
 
                 await thread.send(
-                    "[DISCLAIMER: HuggingBot is a beta feature; The Audiodlm2"
+                    "[DISCLAIMER: HuggingBot is a beta feature; The AudioLDM2"
                     " model can be found here: https://huggingface.co/spaces/"
                     "haoheliu/audioldm2-text2audio-text2music]"
                 )
                 if os.environ.get("TEST_ENV") == "True":
-                    print("Running audiodlm2_create_job...")
+                    print("Running audioldm2_create_job...")
 
                 loop = asyncio.get_running_loop()
-                job = await loop.run_in_executor(None, audiodlm2_create_job, prompt)
+                job = await loop.run_in_executor(None, audioldm2_create_job, prompt)
 
                 try:
                     job.result()
@@ -84,4 +84,4 @@ async def audiodlm2_create(ctx, prompt):
                 await thread.send(embed=embed)
 
     except Exception as e:
-        print(f"audiodlm2_create Error: {e}")
+        print(f"audioldm2_create Error: {e}")
