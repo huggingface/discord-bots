@@ -49,7 +49,7 @@ async def audiodlm2_create(ctx, prompt):
                 await thread.send(
                     "[DISCLAIMER: HuggingBot is a beta feature; The Audiodlm2"
                     " model can be found here: https://huggingface.co/spaces/"
-                    " haoheliu/audioldm2-text2audio-text2music]"
+                    "haoheliu/audioldm2-text2audio-text2music]"
                 )
                 if os.environ.get("TEST_ENV") == "True":
                     print("Running audiodlm2_create_job...")
