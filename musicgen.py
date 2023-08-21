@@ -1,11 +1,14 @@
-import asyncio
 import os
 
+import asyncio
 import discord
+
 from gradio_client import Client
+from gradio_client.utils import QueueError
+
 
 BOT_USER_ID = 1102236653545861151  # real
-MUSIC_CHANNEL_ID = 1140990231730987058  # real
+MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 
 musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
 
@@ -16,10 +19,7 @@ def music_create_job(prompt):
         job = musicgen.submit(prompt, api_name="/predict")
         while not job.done():
             pass
-        files = job.outputs()
-        files = files[0]
-
-        return files
+        return job
 
     except Exception as e:
         print(f"music_create_job Error: {e}")
@@ -48,9 +48,17 @@ async def music_create(ctx, prompt):
                     print("Running music_create_job...")
 
                 loop = asyncio.get_running_loop()
-                files = await loop.run_in_executor(None, music_create_job, prompt)
+                job = await loop.run_in_executor(None, music_create_job, prompt)
 
-                audio, video = files[0], files[1]
+                try:
+                    job.result()
+                    files = job.outputs()
+                    media_files = files[0]
+                except QueueError:
+                    await thread.send("The gradio space powering this bot is really busy! Please try again later!")
+
+                audio = media_files[0]
+                video = media_files[1]
 
                 with open(audio, "rb") as file:
                     discord_file = discord.File(file)
@@ -65,7 +73,7 @@ async def music_create(ctx, prompt):
                 tweet1 = "https://twitter.com/intent/tweet?text="
                 tweet2 = "I%20generated%20this%20audio%20using%20MusicGen"
                 tweet3 = "%20in%20the%20%F0%9F%A4%97%20@huggingface%20Discord!"
-                tweet4 = "%0Ahf.co/join/discord%0A%0APrompt:%20"
+                tweet4 = "%0Ahf.co/join/discord%0APrompt:%20"
                 prompt = prompt.replace(" ", "%20")
                 intent_link = f"{tweet1}{tweet2}{tweet3}{tweet4}{prompt}"
                 embed.add_field(
