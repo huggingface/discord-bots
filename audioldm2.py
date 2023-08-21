@@ -67,6 +67,5 @@ async def audioldm2_create(ctx, prompt):
                     discord_file = discord.File(file)
                 await thread.send(file=discord_file)
 
-
     except Exception as e:
         print(f"audioldm2_create Error: {e}")
