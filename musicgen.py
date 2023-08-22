@@ -59,7 +59,6 @@ async def music_create(ctx, prompt):
 
                 audio = media_files[0]
                 video = media_files[1]
-                
                 short_filename = prompt[:20]
                 audio_filename = f"{short_filename}.mp3"
                 video_filename = f"{short_filename}.mp4"
