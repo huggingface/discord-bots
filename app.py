@@ -3,7 +3,7 @@ import threading
 
 import discord
 import gradio as gr
-from audiodlm2 import audiodlm2_create
+from audioldm2 import audioldm2_create
 from deepfloydif import deepfloydif_stage_1, deepfloydif_stage_2_react_check
 from discord import app_commands
 from discord.ext import commands
@@ -85,15 +85,15 @@ async def musicgen(ctx, prompt: str):
 
 
 @client.hybrid_command(
-    name="audiodlm2",
+    name="audioldm2",
     with_app_command=True,
     description="Enter a prompt to generate music!",
 )
 @app_commands.guilds(MY_GUILD)
-async def audiodlm2(ctx, prompt: str):
-    """Audiodlm2 generation"""
+async def audioldm2(ctx, prompt: str):
+    """Audioldm2 generation"""
     try:
-        await audiodlm2_create(ctx, prompt)
+        await audioldm2_create(ctx, prompt)
     except Exception as e:
         print(f"Error: (app.py){e}")
 
