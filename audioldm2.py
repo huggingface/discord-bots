@@ -63,9 +63,12 @@ async def audioldm2_create(ctx, prompt):
                 except QueueError:
                     await thread.send("The gradio space powering this bot is really busy! Please try again later!")
 
+                short_filename = prompt[:20]
+                video_filename = f"{short_filename}.mp4"     
+
                 with open(video, "rb") as file:
-                    discord_file = discord.File(file)
-                await thread.send(file=discord_file)
+                    discord_video_file = discord.File(file, filename=video_filename)
+                await thread.send(file=discord_video_file)
 
     except Exception as e:
         print(f"audioldm2_create Error: {e}")
