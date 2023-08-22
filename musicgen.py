@@ -62,7 +62,7 @@ async def music_create(ctx, prompt):
                 
                 short_filename = prompt[:20]
                 audio_filename = f"{short_filename}.mp3"
-                video_filename = f"{short_filename}.mp4"  
+                video_filename = f"{short_filename}.mp4"
 
                 with open(video, "rb") as file:
                     discord_video_file = discord.File(file, filename=video_filename)
