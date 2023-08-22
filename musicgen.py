@@ -59,14 +59,17 @@ async def music_create(ctx, prompt):
 
                 audio = media_files[0]
                 video = media_files[1]
-
-                with open(audio, "rb") as file:
-                    discord_file = discord.File(file)
-                await thread.send(file=discord_file)
+                short_filename = prompt[:20]
+                audio_filename = f"{short_filename}.mp3"
+                video_filename = f"{short_filename}.mp4"
 
                 with open(video, "rb") as file:
-                    discord_file = discord.File(file)
-                await thread.send(file=discord_file)
+                    discord_video_file = discord.File(file, filename=video_filename)
+                await thread.send(file=discord_video_file)
+
+                with open(audio, "rb") as file:
+                    discord_audio_file = discord.File(file, filename=audio_filename)
+                await thread.send(file=discord_audio_file)
 
                 embed = discord.Embed()
                 embed.set_thumbnail(url="https://abs.twimg.com/icons/apple-touch-icon-192x192.png")
