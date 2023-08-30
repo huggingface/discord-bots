@@ -40,10 +40,6 @@ async def music_create(ctx, prompt):
                     small_prompt = prompt
                 thread = await message.create_thread(name=small_prompt, auto_archive_duration=60)
 
-                await thread.send(
-                    "[DISCLAIMER: HuggingBot is a beta feature; The MusicGen"
-                    " model can be found here: https://huggingface.co/spaces/facebook/MusicGen]"
-                )
                 if os.environ.get("TEST_ENV") == "True":
                     print("Running music_create_job...")
 
