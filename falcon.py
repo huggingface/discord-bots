@@ -73,10 +73,6 @@ async def try_falcon(ctx, prompt):
                 else:
                     small_prompt = prompt
                 thread = await message.create_thread(name=small_prompt, auto_archive_duration=60)  # interaction.user
-                await thread.send(
-                    "[DISCLAIMER: HuggingBot is a **highly experimental** beta feature; The Falcon model and system"
-                    " prompt can be found here: https://huggingface.co/spaces/HuggingFaceH4/falcon-chat]"
-                )
 
                 if os.environ.get("TEST_ENV") == "True":
                     print("Running falcon_initial_generation...")
