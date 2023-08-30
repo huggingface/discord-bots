@@ -18,11 +18,11 @@ audioldm2 = Client("huggingface-projects/audioldm2-text2audio-text2music", HF_TO
 def audioldm2_create_job(prompt):
     """Generates a sound or music based on a given prompt"""
     try:
-        random.seed(datetime.now().timestamp())
-        guidance_scale = 6  # between 1-6, larger = better, smaller = diverser
-        seed = random.randint(1, 1000)
-        quality_control = 3  # between 1-3, higher = longer compute but better results
-        job = audioldm2.submit(prompt, guidance_scale, seed, quality_control, fn_index=0)
+        #random.seed(datetime.now().timestamp())
+        #guidance_scale = 6  # between 1-6, larger = better, smaller = diverser
+        #seed = random.randint(1, 1000)
+        #quality_control = 3  # between 1-3, higher = longer compute but better results
+        job = audioldm2.submit(prompt, api_name="/text2audio")
         while not job.done():
             pass
         return job
