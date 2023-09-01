@@ -9,7 +9,7 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 codellama = Client("https://huggingface-projects-codellama-13b-chat.hf.space/", HF_TOKEN)
 
 BOT_USER_ID = 1102236653545861151  # real
-CODELLAMA_CHANNEL_ID = 1100458786826747945  # bot-test
+CODELLAMA_CHANNEL_ID = 1147210106321256508  # real
 
 
 codellama_threadid_userid_dictionary = {}
