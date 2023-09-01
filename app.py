@@ -9,7 +9,7 @@ from discord import app_commands
 from discord.ext import commands
 from falcon import continue_falcon, try_falcon
 from musicgen import music_create
-
+from codellama import continue_codellama, try_codellama
 
 # HF GUILD SETTINGS
 MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
@@ -51,11 +51,26 @@ async def falcon(ctx, prompt: str):
         print(f"Error: {e}")
 
 
+@client.hybrid_command(
+    name="codellama",
+    with_app_command=True,
+    description="Enter a prompt to generate code!",
+)
+@app_commands.guilds(MY_GUILD)
+async def codellama(ctx, prompt: str):
+    """Audioldm2 generation"""
+    try:
+        await try_codellama(ctx, prompt)
+    except Exception as e:
+        print(f"Error: (app.py){e}")
+
+
 @client.event
 async def on_message(message):
     """Checks channel and continues Falcon conversation if it's the right Discord Thread"""
     try:
         await continue_falcon(message)
+        await continue_codellama(message)
     except Exception as e:
         print(f"Error: {e}")
 
