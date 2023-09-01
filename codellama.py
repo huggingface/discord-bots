@@ -19,7 +19,7 @@ codellama_threadid_conversation = {}
 def codellama_initial_generation(prompt, thread):
     """job.submit inside of run_in_executor = more consistent bot behavior"""
     global codellama_threadid_conversation
-    
+
     chat_history = f"{thread.id}.json"
     conversation = []
     with open(chat_history, "w") as json_file:
@@ -31,22 +31,18 @@ def codellama_initial_generation(prompt, thread):
         pass
     else:
         result = job.outputs()[-1]
-        with open(result, 'r') as json_file:
-          data = json.load(json_file)
+        with open(result, "r") as json_file:
+            data = json.load(json_file)
         response = data[-1][-1]
         conversation.append((prompt, response))
         with open(chat_history, "w") as json_file:
             json.dump(conversation, json_file)
-        print(prompt)
-        print(response)
-        print(conversation)
-        print(chat_history)
 
         codellama_threadid_conversation[thread.id] = chat_history
         if len(response) > 1300:
             response = response[:1300] + "...\nTruncating response due to discord api limits."
         return response
-        
+
 
 async def try_codellama(ctx, prompt):
     """Generates text based on a given prompt"""
@@ -86,15 +82,15 @@ async def continue_codellama(message):
 
                     prompt = message.content
                     chat_history = codellama_threadid_conversation[message.channel.id]
-                    
+
                     # Check to see if conversation is ongoing or ended (>15000 characters)
-                    with open(chat_history, 'r') as json_file:
+                    with open(chat_history, "r") as json_file:
                         conversation = json.load(json_file)
                     total_characters = 0
                     for item in conversation:
                         for string in item:
                             total_characters += len(string)
-                            
+
                     if total_characters < 15000:
                         if os.environ.get("TEST_ENV") == "True":
                             print("Running codellama.submit")
@@ -104,40 +100,40 @@ async def continue_codellama(message):
                         else:
                             if os.environ.get("TEST_ENV") == "True":
                                 print("Continue_codellama job done")
-    
+
                             result = job.outputs()[-1]
-                            with open(result, 'r') as json_file:
+                            with open(result, "r") as json_file:
                                 data = json.load(json_file)
                             response = data[-1][-1]
-    
-                            with open(chat_history, 'r') as json_file:
+
+                            with open(chat_history, "r") as json_file:
                                 conversation = json.load(json_file)   
-                                
+
                             conversation.append((prompt, response))
                             # now we have prompt, response, and the newly updated full conversation
-    
+
                             with open(chat_history, "w") as json_file:
                                 json.dump(conversation, json_file)
                             if os.environ.get("TEST_ENV") == "True":
                                 print(prompt)
                                 print(response)
-                                print(conversation) 
+                                print(conversation)
                                 print(chat_history)
-                
+
                             codellama_threadid_conversation[message.channel.id] = chat_history
                             if len(response) > 1300:
                                 response = response[:1300] + "...\nTruncating response due to discord api limits."
-    
+
                             await message.reply(response)
-    
+
                             total_characters = 0
                             for item in conversation:
                                 for string in item:
                                     total_characters += len(string)
-                        
+
                             if total_characters >= 15000:
-                                await message.reply("Conversation ending due to length, feel free to start a new one!") 
-                        
+                                await message.reply("Conversation ending due to length, feel free to start a new one!")
+
     except Exception as e:
         print(f"continue_codellama Error: {e}")
         await message.reply(f"Error: {e} <@811235357663297546> (continue_codellama error)")
