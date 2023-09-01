@@ -107,7 +107,7 @@ async def continue_codellama(message):
                             response = data[-1][-1]
 
                             with open(chat_history, "r") as json_file:
-                                conversation = json.load(json_file)   
+                                conversation = json.load(json_file)
 
                             conversation.append((prompt, response))
                             # now we have prompt, response, and the newly updated full conversation
