@@ -13,8 +13,8 @@ from discord.ui import Button, View
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 
-BOT_USER_ID = 1102236653545861151 # 1138142964204441671
-DEEPFLOYDIF_CHANNEL_ID = 1100458786826747945 # bot test
+BOT_USER_ID = 1102236653545861151  # real
+DEEPFLOYDIF_CHANNEL_ID = 1119313215675973714  # real
 
 
 def deepfloydif_stage_1_inference(prompt):
@@ -71,7 +71,7 @@ def deepfloydif_stage_3_inference(index, path_for_stage_2_upscaling, prompt):
     seed_3 = 0
     guidance_scale_3 = 9
     number_of_inference_steps_3 = 40
-    
+
     result_path = deepfloydif_client.predict(
         path_for_stage_2_upscaling,
         selected_index_for_stage_2,
@@ -86,7 +86,7 @@ def deepfloydif_stage_3_inference(index, path_for_stage_2_upscaling, prompt):
         number_of_inference_steps_3,
         api_name="/upscale1024",
     )
-    return result_path    
+    return result_path
 
 
 def load_image(png_files, stage_1_images):
@@ -138,62 +138,65 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                         print("Images combined for deepfloydif_stage_1")
 
                     with Image.open(combined_image_path) as img:
-                        
+
                         width, height = img.size
                         new_width = width * 3
                         new_height = height * 3
                         resized_img = img.resize((new_width, new_height))
                         x2_combined_image_path = combined_image_path
                         resized_img.save(x2_combined_image_path)
-                        
-                    # making image bigger, more readable
-                    with open(x2_combined_image_path, "rb") as f: # was combined_image_path
 
+                    # making image bigger, more readable
+                    with open(x2_combined_image_path, "rb") as f:  # was combined_image_path
                         button1 = Button(emoji="↖")
                         button2 = Button(emoji="↗")
                         button3 = Button(emoji="↙")
                         button4 = Button(emoji="↘")
 
-                        #------------------------------------------------------------------------------------------------------
                         async def button1_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_2(0, path_for_stage_2_upscaling)
-                            
+
                             with open(result_path, "rb") as f:
                                 upscale1024_1 = Button(label="Upscale by x4")
                                 upscale1024_1.callback = upscale1024_1_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024_1)
-                                
+
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                    view=view
+                                    view=view,
                                 )
 
-                                
                         async def upscale1024_1_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_3(0, path_for_stage_2_upscaling, prompt)
-                            
+
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 )
-                        #------------------------------------------------------------------------------------------------------
+
                         async def button2_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_2(1, path_for_stage_2_upscaling)
-                            
+
                             with open(result_path, "rb") as f:
                                 upscale1024_2 = Button(label="Upscale by x4")
                                 upscale1024_2.callback = upscale1024_2_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024_2)
-                                
+
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
@@ -201,28 +204,31 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                     view=view
                                 )
 
-                                
                         async def upscale1024_2_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_3(1, path_for_stage_2_upscaling, prompt)
-                            
+
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 )
-                        #------------------------------------------------------------------------------------------------------                                
+
                         async def button3_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_2(2, path_for_stage_2_upscaling)
-                            
+
                             with open(result_path, "rb") as f:
                                 upscale1024_3 = Button(label="Upscale by x4")
                                 upscale1024_3.callback = upscale1024_3_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024_3)
-                                
+
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
@@ -230,28 +236,31 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                     view=view
                                 )
 
-                        
                         async def upscale1024_3_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_3(2, path_for_stage_2_upscaling, prompt)
-                            
+
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 )
-                         #------------------------------------------------------------------------------------------------------                               
+
                         async def button4_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_2(3, path_for_stage_2_upscaling)
-                            
+
                             with open(result_path, "rb") as f:
                                 upscale1024_4 = Button(label="Upscale by x4")
                                 upscale1024_4.callback = upscale1024_4_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024_4)
-                                
+
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
@@ -259,31 +268,30 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                     view=view
                                 )
 
-                        
                         async def upscale1024_4_callback(interaction):
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_3(3, path_for_stage_2_upscaling, prompt)
-                            
+
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 ) 
-                        #------------------------------------------------------------------------------------------------------
-                                
-                        
+
                         button1.callback = button1_callback
                         button2.callback = button2_callback
                         button3.callback = button3_callback
                         button4.callback = button4_callback                        
-                        
+
                         view = View(timeout=None)
                         view.add_item(button1)
                         view.add_item(button2)
                         view.add_item(button3)
                         view.add_item(button4)
-                        
+
                         combined_image_dfif = await ctx.send(
                             f"{ctx.author.mention} Click a button to upscale!",
                             file=discord.File(f, f"{partial_path}.png"),
@@ -291,7 +299,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                         )
                 else:
                     await ctx.send(f"{ctx.author.mention} No PNG files were found, cannot post them!")
-                    
+
     except Exception as e:
         print(f"Error: {e}")
 
@@ -307,7 +315,6 @@ async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling):
 
     except Exception as e:
         print(f"Error: {e}")
-
 
 
 async def deepfloydif_stage_3(index: int, path_for_stage_2_upscaling, prompt):
