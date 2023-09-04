@@ -138,7 +138,6 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                         print("Images combined for deepfloydif_stage_1")
 
                     with Image.open(combined_image_path) as img:
-
                         width, height = img.size
                         new_width = width * 3
                         new_height = height * 3
@@ -201,7 +200,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                    view=view
+                                    view=view,
                                 )
 
                         async def upscale1024_2_callback(interaction):
@@ -233,7 +232,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                    view=view
+                                    view=view,
                                 )
 
                         async def upscale1024_3_callback(interaction):
@@ -265,7 +264,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                    view=view
+                                    view=view,
                                 )
 
                         async def upscale1024_4_callback(interaction):
@@ -279,12 +278,12 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                ) 
+                                )
 
                         button1.callback = button1_callback
                         button2.callback = button2_callback
                         button3.callback = button3_callback
-                        button4.callback = button4_callback                        
+                        button4.callback = button4_callback
 
                         view = View(timeout=None)
                         view.add_item(button1)
@@ -295,7 +294,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                         combined_image_dfif = await ctx.send(
                             f"{ctx.author.mention} Click a button to upscale!",
                             file=discord.File(f, f"{partial_path}.png"),
-                            view=view
+                            view=view,
                         )
                 else:
                     await ctx.send(f"{ctx.author.mention} No PNG files were found, cannot post them!")
