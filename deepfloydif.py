@@ -290,7 +290,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                         view.add_item(button2)
                         view.add_item(button3)
                         view.add_item(button4)
-                        
+
                         # could store this message as combined_image_dfif in case it's useful for future testing
                         await ctx.send(
                             f"{ctx.author.mention} Click a button to upscale!",
