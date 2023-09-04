@@ -4,7 +4,7 @@ import threading
 import discord
 import gradio as gr
 from audioldm2 import audioldm2_create
-from deepfloydif import deepfloydif_stage_1, deepfloydif_stage_2_react_check
+from deepfloydif import deepfloydif_stage_1
 from discord import app_commands
 from discord.ext import commands
 from falcon import continue_falcon, try_falcon
