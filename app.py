@@ -113,15 +113,6 @@ async def audioldm2(ctx, prompt: str):
         print(f"Error: (app.py){e}")
 
 
-@client.event
-async def on_reaction_add(reaction, user):
-    """Checks for a reaction in order to call dfif2"""
-    try:
-        await deepfloydif_stage_2_react_check(reaction, user)
-    except Exception as e:
-        print(f"Error: {e} (known error, does not cause issues, low priority)")
-
-
 def run_bot():
     client.run(DISCORD_TOKEN)
 
