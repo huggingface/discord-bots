@@ -166,14 +166,18 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                             # create and use upscale 1024 button
                             with open(result_path, "rb") as f:
-                                upscale1024 = Button(label="High-quality upscale (x4)", custom_id=str(index))  # "0", "1" etc
+                                upscale1024 = Button(
+                                    label="High-quality upscale (x4)", custom_id=str(index)
+                                )  # "0", "1" etc
                                 upscale1024.callback = upscale1024_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024)
 
                                 await interaction.delete_original_response()
                                 await channel.send(
-                                    content=f"{ctx.author.mention} Here is the upscaled image! Click to upscale even more!",
+                                    content=(
+                                        f"{ctx.author.mention} Here is the upscaled image! Click to upscale even more!"
+                                    ),
                                     file=discord.File(f, f"{prompt}.png"),
                                     view=view,
                                 )
