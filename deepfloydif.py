@@ -156,15 +156,17 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                         async def button_callback(interaction):
                             dict = interaction.data
-                            index = dict['custom_id']
+                            index = dict["custom_id"]
                             index = int(index)
 
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_2(index, path_for_stage_2_upscaling)
 
                             # create and use upscale 1024 button
                             with open(result_path, "rb") as f:
-                                upscale1024 = Button(label="Upscale by x4", custom_id=str(index)) # "0", "1" etc
+                                upscale1024 = Button(label="Upscale by x4", custom_id=str(index))  # "0", "1" etc
                                 upscale1024.callback = upscale1024_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024)
@@ -173,15 +175,17 @@ async def deepfloydif_generate64(ctx, prompt, client):
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                    view=view
+                                    view=view,
                                 )
 
                         async def upscale1024_callback(interaction):
                             dict = interaction.data
-                            index = dict['custom_id']
+                            index = dict["custom_id"]
                             index = int(index)
 
-                            await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
+                            await interaction.response.send_message(
+                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                            )
                             result_path = await deepfloydif_stage_3(index, path_for_stage_2_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
