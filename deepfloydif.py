@@ -13,11 +13,11 @@ from discord.ui import Button, View
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 
-BOT_USER_ID = 1102236653545861151  # real
-DEEPFLOYDIF_CHANNEL_ID = 1119313215675973714  # real
+BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
+DEEPFLOYDIF_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) else 1119313215675973714
 
 
-def deepfloydif_stage_1_inference(prompt):
+def deepfloydif_generate64_inference(prompt):
     """Generates an image based on a prompt"""
     negative_prompt = ""
     seed = random.randint(0, 1000)
@@ -28,7 +28,7 @@ def deepfloydif_stage_1_inference(prompt):
     (
         stage_1_images,
         stage_1_param_path,
-        path_for_stage_2_upscaling,
+        path_for_upscale256_upscaling,
     ) = deepfloydif_client.predict(
         prompt,
         negative_prompt,
@@ -39,19 +39,19 @@ def deepfloydif_stage_1_inference(prompt):
         number_of_inference_steps,
         api_name="/generate64",
     )
-    return [stage_1_images, stage_1_param_path, path_for_stage_2_upscaling]
+    return [stage_1_images, stage_1_param_path, path_for_upscale256_upscaling]
 
 
-def deepfloydif_stage_2_inference(index, path_for_stage_2_upscaling):
-    """Upscales one of the images from deepfloydif_stage_1_inference based on the chosen index"""
-    selected_index_for_stage_2 = index
+def deepfloydif_upscale256_inference(index, path_for_upscale256_upscaling):
+    """Upscales one of the images from deepfloydif_generate64_inference based on the chosen index"""
+    selected_index_for_upscale256 = index
     seed_2 = 0
     guidance_scale_2 = 4
     custom_timesteps_2 = "smart50"
     number_of_inference_steps_2 = 50
     result_path = deepfloydif_client.predict(
-        path_for_stage_2_upscaling,
-        selected_index_for_stage_2,
+        path_for_upscale256_upscaling,
+        selected_index_for_upscale256,
         seed_2,
         guidance_scale_2,
         custom_timesteps_2,
@@ -61,20 +61,22 @@ def deepfloydif_stage_2_inference(index, path_for_stage_2_upscaling):
     return result_path
 
 
-def deepfloydif_stage_3_inference(index, path_for_stage_2_upscaling, prompt):
-    selected_index_for_stage_2 = index
-    seed_2 = 0
-    guidance_scale_2 = 4
-    custom_timesteps_2 = "smart50"
-    number_of_inference_steps_2 = 50
-    negative_prompt = ""
-    seed_3 = 0
-    guidance_scale_3 = 9
-    number_of_inference_steps_3 = 40
+def deepfloydif_upscale1024_inference(index, path_for_upscale256_upscaling, prompt):
+    """Upscales to stage 2, then stage 3"""
+    selected_index_for_upscale256 = index
+    seed_2 = 0  # default seed for stage 2 256 upscaling
+    guidance_scale_2 = 4 # default for stage 2
+    custom_timesteps_2 = "smart50" # default for stage 2
+    number_of_inference_steps_2 = 50 # default for stage 2
+    negative_prompt = "" # empty (not used, could add in the future)
+    
+    seed_3 = 0 # default for stage 3 1024 upscaling
+    guidance_scale_3 = 9 # default for stage 3
+    number_of_inference_steps_3 = 40 # default for stage 3
 
     result_path = deepfloydif_client.predict(
-        path_for_stage_2_upscaling,
-        selected_index_for_stage_2,
+        path_for_upscale256_upscaling,
+        selected_index_for_upscale256,
         seed_2,
         guidance_scale_2,
         custom_timesteps_2,
@@ -100,7 +102,7 @@ def load_image(png_files, stage_1_images):
 
 def combine_images(png_files, stage_1_images, partial_path):
     if os.environ.get("TEST_ENV") == "True":
-        print("Combining images for deepfloydif_stage_1")
+        print("Combining images for deepfloydif_generate64")
     images = load_image(png_files, stage_1_images)
     combined_image = Image.new("RGB", (images[0].width * 2, images[0].height * 2))
     combined_image.paste(images[0], (0, 0))
@@ -112,30 +114,30 @@ def combine_images(png_files, stage_1_images, partial_path):
     return combined_image_path
 
 
-async def deepfloydif_stage_1(ctx, prompt, client):
+async def deepfloydif_generate64(ctx, prompt, client):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
         if ctx.author.id != BOT_USER_ID:
             if ctx.channel.id == DEEPFLOYDIF_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
-                    print("Safety checks passed for deepfloydif_stage_1")
+                    print("Safety checks passed for deepfloydif_generate64")
                 channel = client.get_channel(DEEPFLOYDIF_CHANNEL_ID)
                 # interaction.response message can't be used to create a thread, so we create another message
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention} <a:loading:1114111677990981692>")
 
                 loop = asyncio.get_running_loop()
-                result = await loop.run_in_executor(None, deepfloydif_stage_1_inference, prompt)
+                result = await loop.run_in_executor(None, deepfloydif_generate64_inference, prompt)
                 stage_1_images = result[0]
-                path_for_stage_2_upscaling = result[2]
+                path_for_upscale256_upscaling = result[2]
 
-                partial_path = pathlib.Path(path_for_stage_2_upscaling).name
+                partial_path = pathlib.Path(path_for_upscale256_upscaling).name
                 png_files = list(glob.glob(f"{stage_1_images}/**/*.png"))
 
                 if png_files:
                     await message.delete()
                     combined_image_path = combine_images(png_files, stage_1_images, partial_path)
                     if os.environ.get("TEST_ENV") == "True":
-                        print("Images combined for deepfloydif_stage_1")
+                        print("Images combined for deepfloydif_generate64")
 
                     with Image.open(combined_image_path) as img:
                         width, height = img.size
@@ -156,7 +158,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_2(0, path_for_stage_2_upscaling)
+                            result_path = await deepfloydif_upscale256(0, path_for_upscale256_upscaling)
 
                             with open(result_path, "rb") as f:
                                 upscale1024_1 = Button(label="Upscale by x4")
@@ -175,7 +177,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_3(0, path_for_stage_2_upscaling, prompt)
+                            result_path = await deepfloydif_upscale1024(0, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
@@ -188,7 +190,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_2(1, path_for_stage_2_upscaling)
+                            result_path = await deepfloydif_upscale256(1, path_for_upscale256_upscaling)
 
                             with open(result_path, "rb") as f:
                                 upscale1024_2 = Button(label="Upscale by x4")
@@ -207,7 +209,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_3(1, path_for_stage_2_upscaling, prompt)
+                            result_path = await deepfloydif_upscale1024(1, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
@@ -220,7 +222,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_2(2, path_for_stage_2_upscaling)
+                            result_path = await deepfloydif_upscale256(2, path_for_upscale256_upscaling)
 
                             with open(result_path, "rb") as f:
                                 upscale1024_3 = Button(label="Upscale by x4")
@@ -239,7 +241,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_3(2, path_for_stage_2_upscaling, prompt)
+                            result_path = await deepfloydif_upscale1024(2, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
@@ -252,7 +254,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_2(3, path_for_stage_2_upscaling)
+                            result_path = await deepfloydif_upscale256(3, path_for_upscale256_upscaling)
 
                             with open(result_path, "rb") as f:
                                 upscale1024_4 = Button(label="Upscale by x4")
@@ -271,7 +273,7 @@ async def deepfloydif_stage_1(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_3(3, path_for_stage_2_upscaling, prompt)
+                            result_path = await deepfloydif_upscale1024(3, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
@@ -304,12 +306,12 @@ async def deepfloydif_stage_1(ctx, prompt, client):
         print(f"Error: {e}")
 
 
-async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling):
+async def deepfloydif_upscale256(index: int, path_for_upscale256_upscaling):
     """upscaling function for images generated using /deepfloydif"""
     try:
         loop = asyncio.get_running_loop()
         result_path = await loop.run_in_executor(
-            None, deepfloydif_stage_2_inference, index, path_for_stage_2_upscaling
+            None, deepfloydif_upscale256_inference, index, path_for_upscale256_upscaling
         )
         return result_path
 
@@ -317,12 +319,12 @@ async def deepfloydif_stage_2(index: int, path_for_stage_2_upscaling):
         print(f"Error: {e}")
 
 
-async def deepfloydif_stage_3(index: int, path_for_stage_2_upscaling, prompt):
+async def deepfloydif_upscale1024(index: int, path_for_upscale256_upscaling, prompt):
     """upscaling function for images generated using /deepfloydif"""
     try:
         loop = asyncio.get_running_loop()
         result_path = await loop.run_in_executor(
-            None, deepfloydif_stage_3_inference, index, path_for_stage_2_upscaling, prompt
+            None, deepfloydif_upscale1024_inference, index, path_for_upscale256_upscaling, prompt
         )
         return result_path
 
