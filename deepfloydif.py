@@ -162,7 +162,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_2(index, path_for_stage_2_upscaling)
+                            result_path = await deepfloydif_upscale256(index, path_for_upscale256_upscaling)
 
                             # create and use upscale 1024 button
                             with open(result_path, "rb") as f:
@@ -186,7 +186,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
-                            result_path = await deepfloydif_stage_3(index, path_for_stage_2_upscaling, prompt)
+                            result_path = await deepfloydif_upscale1024(index, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
