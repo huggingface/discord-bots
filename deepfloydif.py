@@ -65,14 +65,14 @@ def deepfloydif_upscale1024_inference(index, path_for_upscale256_upscaling, prom
     """Upscales to stage 2, then stage 3"""
     selected_index_for_upscale256 = index
     seed_2 = 0  # default seed for stage 2 256 upscaling
-    guidance_scale_2 = 4 # default for stage 2
-    custom_timesteps_2 = "smart50" # default for stage 2
-    number_of_inference_steps_2 = 50 # default for stage 2
-    negative_prompt = "" # empty (not used, could add in the future)
+    guidance_scale_2 = 4  # default for stage 2
+    custom_timesteps_2 = "smart50"  # default for stage 2
+    number_of_inference_steps_2 = 50  # default for stage 2
+    negative_prompt = ""  # empty (not used, could add in the future)
     
-    seed_3 = 0 # default for stage 3 1024 upscaling
-    guidance_scale_3 = 9 # default for stage 3
-    number_of_inference_steps_3 = 40 # default for stage 3
+    seed_3 = 0  # default for stage 3 1024 upscaling
+    guidance_scale_3 = 9  # default for stage 3
+    number_of_inference_steps_3 = 40  # default for stage 3
 
     result_path = deepfloydif_client.predict(
         path_for_upscale256_upscaling,
