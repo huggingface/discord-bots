@@ -155,9 +155,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                         button4 = Button(custom_id="3", emoji="↘")
 
                         async def button_callback(interaction):
-                            dict = interaction.data
-                            index = dict["custom_id"]
-                            index = int(index)
+                            index = int(interaction.data["custom_id"])  # 0,1,2,3
 
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
@@ -183,9 +181,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                                 )
 
                         async def upscale1024_callback(interaction):
-                            dict = interaction.data
-                            index = dict["custom_id"]
-                            index = int(index)
+                            index = int(interaction.data["custom_id"])
 
                             await interaction.response.send_message(
                                 f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
@@ -212,7 +208,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                         # could store this message as combined_image_dfif in case it's useful for future testing
                         await ctx.send(
-                            f"{ctx.author.mention} Click a button to upscale! (make larger + increase quality)",
+                            f"{ctx.author.mention} Click a button to upscale! (make larger + enhance quality)",
                             file=discord.File(f, f"{partial_path}.png"),
                             view=view,
                         )
