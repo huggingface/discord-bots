@@ -69,7 +69,7 @@ def deepfloydif_upscale1024_inference(index, path_for_upscale256_upscaling, prom
     custom_timesteps_2 = "smart50"  # default for stage 2
     number_of_inference_steps_2 = 50  # default for stage 2
     negative_prompt = ""  # empty (not used, could add in the future)
-    
+
     seed_3 = 0  # default for stage 3 1024 upscaling
     guidance_scale_3 = 9  # default for stage 3
     number_of_inference_steps_3 = 40  # default for stage 3
