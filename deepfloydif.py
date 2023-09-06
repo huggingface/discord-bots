@@ -166,14 +166,14 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                             # create and use upscale 1024 button
                             with open(result_path, "rb") as f:
-                                upscale1024 = Button(label="Upscale by x4", custom_id=str(index))  # "0", "1" etc
+                                upscale1024 = Button(label="High-quality upscale (x4)", custom_id=str(index))  # "0", "1" etc
                                 upscale1024.callback = upscale1024_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024)
 
                                 await interaction.delete_original_response()
                                 await channel.send(
-                                    content=f"{ctx.author.mention} Here is the upscaled image!",
+                                    content=f"{ctx.author.mention} Here is the upscaled image! Click to upscale even more!",
                                     file=discord.File(f, f"{prompt}.png"),
                                     view=view,
                                 )
@@ -191,7 +191,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
-                                    content=f"{ctx.author.mention} Here is the x4 upscaled image!",
+                                    content=f"{ctx.author.mention} Here's your high-quality x16 image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 )
 
@@ -208,7 +208,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                         # could store this message as combined_image_dfif in case it's useful for future testing
                         await ctx.send(
-                            f"{ctx.author.mention} Click a button to upscale!",
+                            f"{ctx.author.mention} Click a button to upscale! (make larger + increase quality)",
                             file=discord.File(f, f"{partial_path}.png"),
                             view=view,
                         )
