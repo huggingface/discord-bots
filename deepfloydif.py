@@ -158,17 +158,17 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             dict = interaction.data
                             index = dict['custom_id']
                             index = int(index)
-                            
+
                             await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
                             result_path = await deepfloydif_stage_2(index, path_for_stage_2_upscaling)
-                            
+
                             # create and use upscale 1024 button
                             with open(result_path, "rb") as f:
                                 upscale1024 = Button(label="Upscale by x4", custom_id=str(index)) # "0", "1" etc
                                 upscale1024.callback = upscale1024_callback
                                 view = View(timeout=None)
                                 view.add_item(upscale1024)
-                                
+
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the upscaled image!",
@@ -182,14 +182,14 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             index = int(index)
 
                             await interaction.response.send_message(f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True)
-                            result_path = await deepfloydif_stage_3(index, path_for_stage_2_upscaling, prompt)                            
+                            result_path = await deepfloydif_stage_3(index, path_for_stage_2_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=f"{ctx.author.mention} Here is the x4 upscaled image!",
                                     file=discord.File(f, f"{prompt}.png"),
-                                )   
+                                )
 
                         button1.callback = button_callback
                         button2.callback = button_callback
