@@ -1,68 +1,53 @@
 import asyncio
-import json
 import os
+import threading
+from threading import Event
+from typing import Optional
 
-from gradio_client import Client
+import discord
+import gradio as gr
+import gradio_client as grc
+from discord import Permissions
+from discord.ext import commands
+from discord.utils import oauth_url
+from gradio_client.utils import QueueError
+
 
 HF_TOKEN = os.getenv("HF_TOKEN")
-falcon_userid_threadid_dictionary = {}
-threadid_conversation = {}
-# Instructions are for Falcon-chat and can be found here:  https://huggingface.co/spaces/HuggingFaceH4/falcon-chat
-instructions = (
-    "The following is a conversation between a highly knowledgeable and intelligent AI assistant, called Falcon, and a"
-    " human user, called User. In the following interactions, User and Falcon will converse in natural language, and"
-    " Falcon will answer User's questions. Falcon was built to be respectful, polite and inclusive. Falcon was built"
-    " by the Technology Innovation Institute in Abu Dhabi. Falcon will never decline to answer a question, and always"
-    " attempts to give an answer that User would be satisfied with. It knows a lot, and always tells the truth. The"
-    " conversation begins."
-)
-falcon_client = Client("HuggingFaceH4/falcon-chat", HF_TOKEN)
+
 
 BOT_USER_ID = 1086256910572986469 if os.getenv("TEST_ENV", False) else 1102236653545861151
 FALCON_CHANNEL_ID = 1079459939405279232 if os.getenv("TEST_ENV", False) else 1119313248056004729
 
 
-async def waitjob(job):
+thread_to_client = {}
+thread_to_user = {}
+
+
+def truncate_response(response: str) -> str:
+    ending = "...\nTruncating response to 2000 characters due to discord api limits."
+    if len(response) > 2000:
+        return response[: 2000 - len(ending)] + ending
+    else:
+        return response
+
+
+async def wait(job):
     while not job.done():
         await asyncio.sleep(0.2)
 
 
-def falcon_initial_generation(prompt, instructions, thread):
-    """Solves two problems at once; 1) The Slash command + job.submit interaction, and 2) the need for job.submit."""
-    global threadid_conversation
-
-    chathistory = falcon_client.predict(fn_index=5)
-    temperature = 0.8
-    p_nucleus_sampling = 0.9
-
-    job = falcon_client.submit(prompt, chathistory, instructions, temperature, p_nucleus_sampling, fn_index=1)
-    while job.done() is False:
-        pass
-    else:
-        if os.environ.get("TEST_ENV") == "True":
-            print("falcon text gen job done")
-        file_paths = job.outputs()
-        print(file_paths)
-        full_generation = file_paths[-1]
-        print(full_generation)
-        with open(full_generation, "r") as file:
-            data = json.load(file)
-            print(data)
-        output_text = data[-1][-1]
-        threadid_conversation[thread.id] = full_generation
-        if len(output_text) > 1300:
-            output_text = output_text[:1300] + "...\nTruncating response to 2000 characters due to discord api limits."
-        if os.environ.get("TEST_ENV") == "True":
-            print(output_text)
-        return output_text
+def get_client(session: Optional[str] = None) -> grc.Client:
+    client = grc.Client("lunarflu/180b-omar", hf_token=os.getenv("HF_TOKEN"))
+    if session:
+        client.session_hash = session
+    return client
 
 
-async def try_falcon(ctx, prompt):
+async def chat(ctx, prompt):
     """Generates text based on a given prompt"""
+    print("try falcon starting")
     try:
-        global falcon_userid_threadid_dictionary  # tracks userid-thread existence
-        global threadid_conversation
-
         if ctx.author.id != BOT_USER_ID:
             if ctx.channel.id == FALCON_CHANNEL_ID:
                 if os.environ.get("TEST_ENV") == "True":
@@ -77,56 +62,40 @@ async def try_falcon(ctx, prompt):
                 if os.environ.get("TEST_ENV") == "True":
                     print("Running falcon_initial_generation...")
                 loop = asyncio.get_running_loop()
-                output_text = await loop.run_in_executor(None, falcon_initial_generation, prompt, instructions, thread)
-                falcon_userid_threadid_dictionary[thread.id] = ctx.author.id
-
-                await thread.send(output_text)
+                client = await loop.run_in_executor(None, get_client, None)
+                job = client.submit(prompt, api_name="/chat")
+                await wait(job)
+                try:
+                    job.result()
+                    response = job.outputs()[-1]
+                    await thread.send(truncate_response(response))
+                    thread_to_client[thread.id] = client
+                    thread_to_user[thread.id] = ctx.author.id
+                except QueueError:
+                    await thread.send(
+                        "The gradio space powering this bot is really busy! Please try again later!"
+                    )
     except Exception as e:
-        print(f"try_falcon Error: {e}")
+        print(f"chat (180B) Error: {e}")
 
 
-async def continue_falcon(message):
+async def continue_chat(message):
     """Continues a given conversation based on chathistory"""
     try:
-        if not message.author.bot:
-            global falcon_userid_threadid_dictionary  # tracks userid-thread existence
-            if message.channel.id in falcon_userid_threadid_dictionary:  # is this a valid thread?
-                if falcon_userid_threadid_dictionary[message.channel.id] == message.author.id:
-                    print("Safetychecks passed for continue_falcon")
-                    global instructions
-                    global threadid_conversation
-                    await message.add_reaction("🔁")
-
-                    prompt = message.content
-                    chathistory = threadid_conversation[message.channel.id]
-                    temperature = 0.8
-                    p_nucleus_sampling = 0.9
-
-                    if os.environ.get("TEST_ENV") == "True":
-                        print("Running falcon_client.submit")
-                    job = falcon_client.submit(
-                        prompt,
-                        chathistory,
-                        instructions,
-                        temperature,
-                        p_nucleus_sampling,
-                        fn_index=1,
+        if message.channel.id in thread_to_user:
+            if thread_to_user[message.channel.id] == message.author.id:
+                client = thread_to_client[message.channel.id]
+                prompt = message.content
+                job = client.submit(prompt, api_name="/chat")
+                await wait(job)
+                try:
+                    job.result()
+                    response = job.outputs()[-1]
+                    await message.reply(truncate_response(response))
+                except QueueError:
+                    await message.reply(
+                        "The gradio space powering this bot is really busy! Please try again later!"
                     )
-                    await waitjob(job)
-                    if os.environ.get("TEST_ENV") == "True":
-                        print("Continue_falcon job done")
-                    file_paths = job.outputs()
-                    full_generation = file_paths[-1]
-                    with open(full_generation, "r") as file:
-                        data = json.load(file)
-                        output_text = data[-1][-1]
-                    threadid_conversation[message.channel.id] = full_generation  # overwrite the old file
-                    if len(output_text) > 1300:
-                        output_text = (
-                            output_text[:1300]
-                            + "...\nTruncating response to 2000 characters due to discord api limits."
-                        )
-                    await message.reply(output_text)
     except Exception as e:
         print(f"continue_falcon Error: {e}")
         await message.reply(f"Error: {e} <@811235357663297546> (continue_falcon error)")
