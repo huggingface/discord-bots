@@ -4,7 +4,7 @@ import threading
 import discord
 import gradio as gr
 from audioldm2 import audioldm2_create
-from deepfloydif import deepfloydif_stage_1, deepfloydif_stage_2_react_check
+from deepfloydif import deepfloydif_generate64
 from discord import app_commands
 from discord.ext import commands
 from falcon import continue_falcon, try_falcon
@@ -84,7 +84,7 @@ async def on_message(message):
 async def deepfloydif(ctx, prompt: str):
     """DeepfloydIF stage 1 generation"""
     try:
-        await deepfloydif_stage_1(ctx, prompt, client)
+        await deepfloydif_generate64(ctx, prompt, client)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -111,15 +111,6 @@ async def audioldm2(ctx, prompt: str):
         await audioldm2_create(ctx, prompt)
     except Exception as e:
         print(f"Error: (app.py){e}")
-
-
-@client.event
-async def on_reaction_add(reaction, user):
-    """Checks for a reaction in order to call dfif2"""
-    try:
-        await deepfloydif_stage_2_react_check(reaction, user)
-    except Exception as e:
-        print(f"Error: {e} (known error, does not cause issues, low priority)")
 
 
 def run_bot():
