@@ -1,15 +1,8 @@
 import asyncio
 import os
-import threading
-from threading import Event
 from typing import Optional
 
-import discord
-import gradio as gr
 import gradio_client as grc
-from discord import Permissions
-from discord.ext import commands
-from discord.utils import oauth_url
 from gradio_client.utils import QueueError
 
 
