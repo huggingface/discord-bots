@@ -84,7 +84,7 @@ async def on_message(message):
 async def deepfloydif(ctx, prompt: str):
     """DeepfloydIF stage 1 generation"""
     try:
-        await deepfloydif_stage_1(ctx, prompt, client)
+        await deepfloydif_generate64(ctx, prompt, client)
     except Exception as e:
         print(f"Error: {e}")
 
