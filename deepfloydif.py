@@ -18,7 +18,7 @@ DEEPFLOYDIF_CHANNEL_ID = 1121834257959092234 if os.getenv("TEST_ENV", False) els
 
 
 def deepfloydif_generate64_inference(prompt):
-    """Generates an image based on a prompt"""
+    """Generates four images based on a prompt"""
     negative_prompt = ""
     seed = random.randint(0, 1000)
     number_of_images = 4
