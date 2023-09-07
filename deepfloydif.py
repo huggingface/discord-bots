@@ -158,7 +158,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             index = int(interaction.data["custom_id"])  # 0,1,2,3
 
                             await interaction.response.send_message(
-                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                                f"{interaction.user.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
                             result_path = await deepfloydif_upscale256(index, path_for_upscale256_upscaling)
 
@@ -174,7 +174,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=(
-                                        f"{ctx.author.mention} Here is the upscaled image! Click to upscale even more!"
+                                        f"{interaction.user.mention} Here is the upscaled image! Click to upscale even more!"
                                     ),
                                     file=discord.File(f, f"{prompt}.png"),
                                     view=view,
@@ -184,14 +184,14 @@ async def deepfloydif_generate64(ctx, prompt, client):
                             index = int(interaction.data["custom_id"])
 
                             await interaction.response.send_message(
-                                f"{ctx.author.mention} <a:loading:1114111677990981692>", ephemeral=True
+                                f"{interaction.user.mention} <a:loading:1114111677990981692>", ephemeral=True
                             )
                             result_path = await deepfloydif_upscale1024(index, path_for_upscale256_upscaling, prompt)
 
                             with open(result_path, "rb") as f:
                                 await interaction.delete_original_response()
                                 await channel.send(
-                                    content=f"{ctx.author.mention} Here's your high-quality x16 image!",
+                                    content=f"{interaction.user.mention} Here's your high-quality x16 image!",
                                     file=discord.File(f, f"{prompt}.png"),
                                 )
 
@@ -207,7 +207,7 @@ async def deepfloydif_generate64(ctx, prompt, client):
                         view.add_item(button4)
 
                         # could store this message as combined_image_dfif in case it's useful for future testing
-                        await ctx.send(
+                        await channel.send(
                             f"{ctx.author.mention} Click a button to upscale! (make larger + enhance quality)",
                             file=discord.File(f, f"{partial_path}.png"),
                             view=view,
