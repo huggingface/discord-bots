@@ -72,9 +72,7 @@ async def chat(ctx, prompt):
                     thread_to_client[thread.id] = client
                     thread_to_user[thread.id] = ctx.author.id
                 except QueueError:
-                    await thread.send(
-                        "The gradio space powering this bot is really busy! Please try again later!"
-                    )
+                    await thread.send("The gradio space powering this bot is really busy! Please try again later!")
     except Exception as e:
         print(f"chat (180B) Error: {e}")
 
@@ -93,9 +91,7 @@ async def continue_chat(message):
                     response = job.outputs()[-1]
                     await message.reply(truncate_response(response))
                 except QueueError:
-                    await message.reply(
-                        "The gradio space powering this bot is really busy! Please try again later!"
-                    )
+                    await message.reply("The gradio space powering this bot is really busy! Please try again later!")
     except Exception as e:
         print(f"continue_falcon Error: {e}")
         await message.reply(f"Error: {e} <@811235357663297546> (continue_falcon error)")
