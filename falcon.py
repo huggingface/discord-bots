@@ -31,7 +31,7 @@ async def wait(job):
 
 
 def get_client(session: Optional[str] = None) -> grc.Client:
-    client = grc.Client("lunarflu/180b-omar", hf_token=os.getenv("HF_TOKEN"))
+    client = grc.Client("huggingface-projects/falcon-180b-discord", hf_token=os.getenv("HF_TOKEN"))
     if session:
         client.session_hash = session
     return client
