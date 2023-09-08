@@ -52,6 +52,7 @@ async def falcon_chat(ctx, prompt):
                 try:
                     job.result()
                     response = job.outputs()[-1]
+                    await thread.send(response)
                     thread_to_client[thread.id] = client
                     thread_to_user[thread.id] = ctx.author.id
                 except QueueError:
@@ -71,6 +72,7 @@ async def continue_chat(message):
                 try:
                     job.result()
                     response = job.outputs()[-1]
+                    await message.reply(response)
                 except QueueError:
                     await message.reply("The gradio space powering this bot is really busy! Please try again later!")
     except Exception as e:
