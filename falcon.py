@@ -17,14 +17,6 @@ thread_to_client = {}
 thread_to_user = {}
 
 
-def truncate_response(response: str) -> str:
-    ending = "...\nTruncating response to 2000 characters due to discord api limits."
-    if len(response) > 2000:
-        return response[: 2000 - len(ending)] + ending
-    else:
-        return response
-
-
 async def wait(job):
     while not job.done():
         await asyncio.sleep(0.2)
@@ -39,7 +31,6 @@ def get_client(session: Optional[str] = None) -> grc.Client:
 
 async def falcon_chat(ctx, prompt):
     """Generates text based on a given prompt"""
-    print("try falcon starting")
     try:
         if ctx.author.id != BOT_USER_ID:
             if ctx.channel.id == FALCON_CHANNEL_ID:
@@ -61,7 +52,6 @@ async def falcon_chat(ctx, prompt):
                 try:
                     job.result()
                     response = job.outputs()[-1]
-                    await thread.send(truncate_response(response))
                     thread_to_client[thread.id] = client
                     thread_to_user[thread.id] = ctx.author.id
                 except QueueError:
@@ -76,13 +66,11 @@ async def continue_chat(message):
         if message.channel.id in thread_to_user:
             if thread_to_user[message.channel.id] == message.author.id:
                 client = thread_to_client[message.channel.id]
-                prompt = message.content
-                job = client.submit(prompt, api_name="/chat")
+                job = client.submit(message.content, api_name="/chat")
                 await wait(job)
                 try:
                     job.result()
                     response = job.outputs()[-1]
-                    await message.reply(truncate_response(response))
                 except QueueError:
                     await message.reply("The gradio space powering this bot is really busy! Please try again later!")
     except Exception as e:
