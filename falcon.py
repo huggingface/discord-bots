@@ -37,7 +37,7 @@ def get_client(session: Optional[str] = None) -> grc.Client:
     return client
 
 
-async def chat(ctx, prompt):
+async def falcon_chat(ctx, prompt):
     """Generates text based on a given prompt"""
     print("try falcon starting")
     try:
