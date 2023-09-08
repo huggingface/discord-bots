@@ -7,7 +7,7 @@ from audioldm2 import audioldm2_create
 from deepfloydif import deepfloydif_generate64
 from discord import app_commands
 from discord.ext import commands
-from falcon import chat, continue_chat
+from falcon import falcon_chat, continue_chat
 from musicgen import music_create
 from codellama import continue_codellama, try_codellama
 
@@ -46,7 +46,7 @@ async def on_ready():
 async def falcon(ctx, prompt: str):
     """Command that begins a new conversation with Falcon"""
     try:
-        await chat(ctx, prompt)
+        await falcon_chat(ctx, prompt)
     except Exception as e:
         print(f"Error: {e}")
 
