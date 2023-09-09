@@ -209,7 +209,8 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                         # could store this message as combined_image_dfif in case it's useful for future testing
                         await channel.send(
-                            f"**{prompt}** - {ctx.author.mention} Click a button to upscale! (make larger + enhance quality)",
+                            f"**{prompt}** - {ctx.author.mention} Click a button to upscale! (make larger + enhance"
+                            " quality)",
                             file=discord.File(f, f"{partial_path}.png"),
                             view=view,
                         )
