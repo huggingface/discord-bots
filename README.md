@@ -1,23 +1,23 @@
-# How do our bots work?
+# TLDR: How do our bots work ❓
 
-We run the bots inside a free-tier [Space](https://huggingface.co/new-space), which acts as a server. 
+- We run the bots inside a free-tier [Space](https://huggingface.co/new-space?sdk=gradio), which acts as a server. 
+- We use Gradio apps as APIs to use them in our bots
+
+### Building blocks of a Discord Bot 🤖
+
+1. Create an [application](https://discord.com/developers/applications)
+2. Create a Hugging Face [Space](https://huggingface.co/new-space?sdk=gradio)
+3. Add [commands](https://huggingface.co/spaces/huggingface-projects/huggingbots/blob/main/app.py)
+
+After that, we'll have a working discord bot. So how do we spice it up with machine learning?
+
+### Using ML demos in your bot 🧠
+- Almost any Gradio app can be [used as an API](https://www.gradio.app/guides/sharing-your-app#api-page)! This means we can query most Spaces on the Hugging Face Hub and use them in our discord bots.
+
+  ![image](https://github.com/lunarflu/fork-discord-bots/assets/70143200/97316c28-7c99-42c0-ab6a-687819d678f8)
 
 
--> Instructions on having their own bots
-# Building blocks of bots
-
--> The discord end (an application associated with a discord account)
-https://discord.com/developers/applications
--> HF Space (to host the bot for free)
-
--> Commands (to make the bot do something)
--> Events (to automate some behavior)
-
-# Using ML demos in your bot
--> Almost any Gradio app can be [used as an API](https://www.gradio.app/guides/sharing-your-app#api-page)! This means we can query most Spaces on the Hugging Face Hub and use them in our discord bots. 
--> Handling concurrency
-
-Here's a simplified example: 
+Here's an extremely simplified example 💻: 
 
     # query space
     musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
@@ -42,3 +42,15 @@ Here's a simplified example:
         # pass prompt and other parameters if necessary
         job = musicgen.submit(prompt, api_name="/predict")
         return job
+
+In summary, we:
+1. Use a command and specify a prompt ("piano music", for example)
+2. Query a specific Gradio Space as an API, and send it our prompt
+3. Retrieve the results once done and post them to discord
+
+🎉 And voila! 🎉
+
+For further explorations (depending on your needs), we can recommend checking these out 🧐:
+- Events in discord bots (to automate some behavior)
+- Handling concurrency (important if you're making many concurrent requests at once)
+- UI (discord buttons, interactive fields) (can add a lot of functionality)
