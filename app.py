@@ -38,13 +38,13 @@ async def on_ready():
 
 
 @client.hybrid_command(
-    name="falcon",
+    name="falcon180b",
     with_app_command=True,
-    description="Enter some text to chat with the bot! Like this: /falcon Hello, how are you?",
+    description="Enter some text to chat with the bot! Like this: /falcon180b Hello, how are you?",
 )
 @app_commands.guilds(MY_GUILD)
-async def falcon(ctx, prompt: str):
-    """Command that begins a new conversation with Falcon"""
+async def falcon180b(ctx, prompt: str):
+    """Command that begins a new conversation with Falcon180b"""
     try:
         await falcon_chat(ctx, prompt)
     except Exception as e:
