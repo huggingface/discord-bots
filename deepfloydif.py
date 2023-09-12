@@ -174,8 +174,8 @@ async def deepfloydif_generate64(ctx, prompt, client):
                                 await interaction.delete_original_response()
                                 await channel.send(
                                     content=(
-                                        f"{interaction.user.mention} Here is the upscaled image! Click to upscale even"
-                                        " more!"
+                                        f"{interaction.user.mention} Here is the upscaled image! Click the button"
+                                        " to upscale even more!"
                                     ),
                                     file=discord.File(f, f"{prompt}.png"),
                                     view=view,
@@ -209,7 +209,8 @@ async def deepfloydif_generate64(ctx, prompt, client):
 
                         # could store this message as combined_image_dfif in case it's useful for future testing
                         await channel.send(
-                            f"{ctx.author.mention} Click a button to upscale! (make larger + enhance quality)",
+                            f"**{prompt}** - {ctx.author.mention} Click a button to upscale! (make larger + enhance"
+                            " quality)",
                             file=discord.File(f, f"{partial_path}.png"),
                             view=view,
                         )
