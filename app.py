@@ -95,7 +95,7 @@ async def deepfloydif(ctx, prompt: str):
 async def musicgen(ctx, prompt: str, seed: int = None):
     """Generates music based on a prompt"""
     if seed is None:
-        seed = random.randint(1, 10000)    
+        seed = random.randint(1, 10000)
     try:
         await music_create(ctx, prompt, seed)
     except Exception as e:
