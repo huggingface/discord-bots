@@ -19,30 +19,28 @@ After that, we'll have a working discord bot. So how do we spice it up with mach
 
 Here's an extremely simplified example 💻: 
 
-    # query space
-    musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
+```python
+from gradio_client import Client
 
-    # call this function when we use a command + prompt
-    async def music_create(ctx, prompt): 
+musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
+
+# call this function when we use a command + prompt
+async def music_create(ctx, prompt): 
+    # run_in_executor for the blocking function
+    loop = asyncio.get_running_loop()
+    job = await loop.run_in_executor(None, music_create_job, prompt)
     
-        # run_in_executor for the blocking function
-        loop = asyncio.get_running_loop()
-        job = await loop.run_in_executor(None, music_create_job, prompt)
-
-        # extract what we want from the outputs
-        video = job.outputs()[0][0]
-        
-        # send what we want to discord
-        await thread.send(video_file)
-
-
-    # submit as a Gradio job; this makes retrieving outputs simpler
-    def music_create_job(prompt):
+    # extract what we want from the outputs
+    video = job.outputs()[0][0]
     
-        # pass prompt and other parameters if necessary
-        job = musicgen.submit(prompt, api_name="/predict")
-        return job
+    # send what we want to discord
+    await thread.send(video_file)
 
+# submit as a Gradio job; this makes retrieving outputs simpler
+def music_create_job(prompt):
+    # pass prompt and other parameters if necessary
+    job = musicgen.submit(prompt, api_name="/predict")
+    return job
 In summary, we:
 1. Use a command and specify a prompt ("piano music", for example)
 2. Query a specific Gradio Space as an API, and send it our prompt
