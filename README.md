@@ -12,7 +12,7 @@
 After that, we'll have a working discord bot. So how do we spice it up with machine learning?
 
 ### Using ML demos in your bot 🧠
-- Almost any Gradio app can be [used as an API](https://www.gradio.app/guides/sharing-your-app#api-page)! This means we can query most Spaces on the Hugging Face Hub and use them in our discord bots.
+- Almost any [Gradio](https://github.com/gradio-app/gradio/tree/main/client/python) app can be [used as an API](https://www.gradio.app/guides/sharing-your-app#api-page)! This means we can query most Spaces on the Hugging Face Hub and use them in our discord bots.
 
   ![image](https://github.com/lunarflu/fork-discord-bots/assets/70143200/97316c28-7c99-42c0-ab6a-687819d678f8)
 
@@ -41,6 +41,8 @@ def music_create_job(prompt):
     # pass prompt and other parameters if necessary
     job = musicgen.submit(prompt, api_name="/predict")
     return job
+
+```
 In summary, we:
 1. Use a command and specify a prompt ("piano music", for example)
 2. Query a specific Gradio Space as an API, and send it our prompt
