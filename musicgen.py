@@ -13,10 +13,10 @@ MUSIC_CHANNEL_ID = 1140990231730987058  # real musicgen channel
 musicgen = Client("huggingface-projects/transformers-musicgen", hf_token=os.getenv("HF_TOKEN"))
 
 
-def music_create_job(prompt):
+def music_create_job(prompt, seed):
     """Generates music based on a given prompt"""
     try:
-        job = musicgen.submit(prompt, api_name="/predict")
+        job = musicgen.submit(prompt, seed, api_name="/predict")
         while not job.done():
             pass
         return job
@@ -25,7 +25,7 @@ def music_create_job(prompt):
         print(f"music_create_job Error: {e}")
 
 
-async def music_create(ctx, prompt):
+async def music_create(ctx, prompt, seed):
     """Runs music_create_job in executor"""
     try:
         if ctx.author.id != BOT_USER_ID:
@@ -44,7 +44,7 @@ async def music_create(ctx, prompt):
                     print("Running music_create_job...")
 
                 loop = asyncio.get_running_loop()
-                job = await loop.run_in_executor(None, music_create_job, prompt)
+                job = await loop.run_in_executor(None, music_create_job, prompt, seed)
 
                 try:
                     job.result()

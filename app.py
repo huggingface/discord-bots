@@ -1,4 +1,5 @@
 import os
+import random
 import threading
 
 import discord
@@ -92,10 +93,12 @@ async def deepfloydif(ctx, prompt: str):
 
 @client.hybrid_command(name="musicgen", with_app_command=True, description="Enter a prompt to generate music!")
 @app_commands.guilds(MY_GUILD)
-async def musicgen(ctx, prompt: str):
+async def musicgen(ctx, prompt: str, seed: int = None):
     """Generates music based on a prompt"""
+    if seed is None:
+        seed = random.randint(1, 10000)
     try:
-        await music_create(ctx, prompt)
+        await music_create(ctx, prompt, seed)
     except Exception as e:
         print(f"Error: {e}")
 
