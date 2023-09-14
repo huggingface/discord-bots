@@ -28,17 +28,17 @@ def wuerstchen_inference(prompt, client):
     num_images_per_prompt = 1
 
     job = wuerstchen_client.submit(
-        prompt, 
-        negative_prompt, 
-        seed, 
-        width, 
-        height, 
-        prior_num_inference_steps, 
-        prior_guidance_scale, 
-        decoder_num_inference_steps, 
-        decoder_guidance_scale, 
-        num_images_per_prompt, 
-        api_name="/run"
+        prompt,
+        negative_prompt,
+        seed,
+        width,
+        height,
+        prior_num_inference_steps,
+        prior_guidance_scale,
+        decoder_num_inference_steps,
+        decoder_guidance_scale,
+        num_images_per_prompt,
+        api_name="/run",
     )
     while not job.done():
         pass
