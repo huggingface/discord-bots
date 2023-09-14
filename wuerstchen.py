@@ -41,8 +41,6 @@ def wuerstchen_inference(prompt, client):
     while not job.done():
         pass
     else:
-        print(job.status())
-        print(job.result)
         return job
 
 
