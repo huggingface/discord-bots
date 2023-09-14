@@ -25,15 +25,28 @@ def wuerstchen_inference(prompt, client):
     prior_guidance_scale = 4
     decoder_num_inference_steps = 12
     decoder_guidance_scale = 0
-    num_images_per_prompt = 1 
+    num_images_per_prompt = 1
 
-    job = wuerstchen_client.submit(prompt, negative_prompt, seed, width, height, prior_num_inference_steps, prior_guidance_scale, decoder_num_inference_steps, decoder_guidance_scale, num_images_per_prompt, api_name="/run")
+    job = wuerstchen_client.submit(
+        prompt, 
+        negative_prompt, 
+        seed, 
+        width, 
+        height, 
+        prior_num_inference_steps, 
+        prior_guidance_scale, 
+        decoder_num_inference_steps, 
+        decoder_guidance_scale, 
+        num_images_per_prompt, 
+        api_name="/run"
+    )
     while not job.done():
         pass
     else:
         print(job.status())
         print(job.result)
         return job
+
 
 async def run_wuerstchen(ctx, prompt, client):
     """wuerstchen"""
@@ -46,9 +59,9 @@ async def run_wuerstchen(ctx, prompt, client):
                 loop = asyncio.get_running_loop()
                 job = await loop.run_in_executor(None, wuerstchen_inference, prompt, client)
 
-                png_files = list(glob.glob(f"{job.outputs()[-1]}/**/*.png")) 
+                png_files = list(glob.glob(f"{job.outputs()[-1]}/**/*.png"))
                 await message.delete()
-                
+
                 with open(png_files[0], "rb") as f:
                     await channel.send(f"**{prompt}** - {ctx.author.mention}", file=discord.File(f, "wuerstchen.png"))
     except Exception as e:
