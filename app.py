@@ -11,6 +11,7 @@ from discord.ext import commands
 from falcon import falcon_chat, continue_chat
 from musicgen import music_create
 from codellama import continue_codellama, try_codellama
+from wuerstchen import run_wuerstchen
 
 # HF GUILD SETTINGS
 MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
@@ -115,6 +116,20 @@ async def audioldm2(ctx, prompt: str):
         await audioldm2_create(ctx, prompt)
     except Exception as e:
         print(f"Error: (app.py){e}")
+
+
+@client.hybrid_command(
+    name="wuerstchen",
+    with_app_command=True,
+    description="Enter a prompt to generate art!",
+)
+@app_commands.guilds(MY_GUILD)
+async def wuerstchen_command(ctx, prompt: str):
+    """Wuerstchen generation"""
+    try:
+        await run_wuerstchen(ctx, prompt, client)
+    except Exception as e:
+        print(f"Error wuerstchen: (app.py){e}")
 
 
 def run_bot():
