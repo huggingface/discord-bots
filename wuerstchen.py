@@ -8,7 +8,7 @@ from gradio_client import Client
 
 
 HF_TOKEN = os.getenv("HF_TOKEN")
-wuerstchen_client = Client("warp-ai/Wuerstchen", HF_TOKEN)
+wuerstchen_client = Client("huggingface-projects/Wuerstchen-duplicate", HF_TOKEN)
 
 BOT_USER_ID = 1102236653545861151
 WUERSTCHEN_CHANNEL_ID = 1151792944676864041
