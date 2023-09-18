@@ -17,7 +17,7 @@ WUERSTCHEN_CHANNEL_ID = 1151792944676864041
 
 
 def wuerstchen_inference(prompt):
-"""Inference for Wuerstchen"""
+    """Inference for Wuerstchen"""
     negative_prompt = ""
     seed = random.randint(0, 1000)
     width = 1024
