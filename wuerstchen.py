@@ -26,10 +26,21 @@ def wuerstchen_inference(prompt):
     prior_guidance_scale = 4
     decoder_num_inference_steps = 12
     decoder_guidance_scale = 0
-    num_images_per_prompt = 1 
+    num_images_per_prompt = 1
 
-    result_path = wuerstchen_client.predict(prompt, negative_prompt, seed, width, height, prior_num_inference_steps, prior_guidance_scale, decoder_num_inference_steps, decoder_guidance_scale, num_images_per_prompt, api_name="/run")
-
+    result_path = wuerstchen_client.predict(
+        prompt,
+        negative_prompt,
+        seed,
+        width,
+        height,
+        prior_num_inference_steps,
+        prior_guidance_scale,
+        decoder_num_inference_steps,
+        decoder_guidance_scale,
+        num_images_per_prompt,
+        api_name="/run",
+    )
     png_file = list(glob.glob(f"{result_path}/**/*.png"))
     return png_file[0]
 
