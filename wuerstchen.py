@@ -14,7 +14,8 @@ BOT_USER_ID = 1102236653545861151
 WUERSTCHEN_CHANNEL_ID = 1151792944676864041
 
 
-def wuerstchen_inference(prompt, client):
+def wuerstchen_inference(prompt):
+    """Inference for Wuerstchen"""
     negative_prompt = ""
     seed = random.randint(0, 1000)
     width = 1024
@@ -25,7 +26,7 @@ def wuerstchen_inference(prompt, client):
     decoder_guidance_scale = 0
     num_images_per_prompt = 1
 
-    job = wuerstchen_client.submit(
+    result_path = wuerstchen_client.predict(
         prompt,
         negative_prompt,
         seed,
@@ -38,14 +39,12 @@ def wuerstchen_inference(prompt, client):
         num_images_per_prompt,
         api_name="/run",
     )
-    while not job.done():
-        pass
-    else:
-        return job
+    png_file = list(glob.glob(f"{result_path}/**/*.png"))
+    return png_file[0]
 
 
 async def run_wuerstchen(ctx, prompt, client):
-    """wuerstchen"""
+    """Responds to /Wuerstchen command"""
     try:
         if ctx.author.id != BOT_USER_ID:
             if ctx.channel.id == WUERSTCHEN_CHANNEL_ID:
@@ -53,12 +52,10 @@ async def run_wuerstchen(ctx, prompt, client):
                 message = await ctx.send(f"**{prompt}** - {ctx.author.mention} <a:loading:1114111677990981692>")
 
                 loop = asyncio.get_running_loop()
-                job = await loop.run_in_executor(None, wuerstchen_inference, prompt, client)
+                result_path = await loop.run_in_executor(None, wuerstchen_inference, prompt)
 
-                png_files = list(glob.glob(f"{job.outputs()[-1]}/**/*.png"))
                 await message.delete()
-
-                with open(png_files[0], "rb") as f:
+                with open(result_path, "rb") as f:
                     await channel.send(f"**{prompt}** - {ctx.author.mention}", file=discord.File(f, "wuerstchen.png"))
     except Exception as e:
         print(f"Error: {e}")
