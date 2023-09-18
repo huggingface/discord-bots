@@ -1,12 +1,10 @@
 import asyncio
 import glob
 import os
-import pathlib
 import random
 
 import discord
 from gradio_client import Client
-from PIL import Image
 
 
 HF_TOKEN = os.getenv("HF_TOKEN")
