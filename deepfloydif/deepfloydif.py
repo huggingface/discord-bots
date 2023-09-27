@@ -17,18 +17,18 @@ from discord.ui import Button, View
 HF_TOKEN = os.getenv("HF_TOKEN")
 deepfloydif_client = Client("huggingface-projects/IF", HF_TOKEN)
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-
-#---------------------------------------------------------------------------------------------------------------------
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
-#---------------------------------------------------------------------------------------------------------------------
+
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     synced = await bot.tree.sync()
     print(f"Synced commands: {', '.join([s.name for s in synced])}.")
     print("------")
-#---------------------------------------------------------------------------------------------------------------------
+
+
 @bot.hybrid_command(
     name="deepfloydif",
     description="Enter a prompt to generate an image! Can generate realistic text, too!",
@@ -39,7 +39,6 @@ async def deepfloydif(ctx, prompt: str):
         await deepfloydif_generate64(ctx, prompt)
     except Exception as e:
         print(f"Error: {e}")
-
 
 
 def deepfloydif_generate64_inference(prompt):
@@ -137,9 +136,6 @@ def combine_images(png_files, stage_1_images, partial_path):
     combined_image_path = os.path.join(stage_1_images, f"{partial_path}.png")
     combined_image.save(combined_image_path)
     return combined_image_path
-
-
-
 
 
 async def deepfloydif_generate64(ctx, prompt):
@@ -271,7 +267,6 @@ async def deepfloydif_upscale1024(index: int, path_for_upscale256_upscaling, pro
         print(f"Error: {e}")
 
 
-#---------------------------------------------------------------------------------------------------------------------
 def run_bot():
     bot.run(DISCORD_TOKEN)
 
