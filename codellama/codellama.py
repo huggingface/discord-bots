@@ -15,8 +15,7 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 codellama_client = Client("https://huggingface-projects-codellama-13b-chat.hf.space/", HF_TOKEN)
 codellama_threadid_userid_dictionary = {}
 codellama_threadid_conversation = {}
-intents = discord.Intents.default()
-intents.message_content = True
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
@@ -34,11 +33,11 @@ async def on_ready():
     description="Enter a prompt to generate code!",
 )
 async def codellama(ctx, prompt: str):
-    """Audioldm2 generation"""
+    """Codellama generation"""
     try:
         await try_codellama(ctx, prompt)
     except Exception as e:
-        print(f"Error: (app.py){e}")
+        print(f"Error: {e}")
 
 
 @bot.event
@@ -52,7 +51,7 @@ async def on_message(message):
 
 
 async def try_codellama(ctx, prompt):
-    """Generates text based on a given prompt"""
+    """Generates code based on a given prompt"""
     try:
         global codellama_threadid_userid_dictionary
         global codellama_threadid_conversation
@@ -67,11 +66,11 @@ async def try_codellama(ctx, prompt):
         print(output_code)
         await thread.send(output_code)
     except Exception as e:
-        print(f"try_codellama Error: {e}")
+        print(f"Error: {e}")
 
 
 def codellama_initial_generation(prompt, thread):
-    """job.submit inside of run_in_executor = more consistent bot behavior"""
+    """Job.submit inside of run_in_executor = more consistent bot behavior"""
     global codellama_threadid_conversation
 
     chat_history = f"{thread.id}.json"
@@ -151,7 +150,7 @@ async def continue_codellama(message):
                                 await message.reply("Conversation ending due to length, feel free to start a new one!")
 
     except Exception as e:
-        print(f"continue_codellama Error: {e}")
+        print(f"Error: {e}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
