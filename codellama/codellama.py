@@ -105,7 +105,7 @@ async def continue_codellama(message):
             global codellama_threadid_userid_dictionary  # tracks userid-thread existence
             if message.channel.id in codellama_threadid_userid_dictionary:  # is this a valid thread?
                 if codellama_threadid_userid_dictionary[message.channel.id] == message.author.id:
-                     global codellama_threadid_conversation
+                    global codellama_threadid_conversation
 
                     prompt = message.content
                     chat_history = codellama_threadid_conversation[message.channel.id]
