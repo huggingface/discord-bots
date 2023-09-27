@@ -12,9 +12,7 @@ from gradio_client import Client
 event = Event()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
-codellama_client = Client(
-    "https://huggingface-projects-codellama-13b-chat.hf.space/", HF_TOKEN
-)
+codellama_client = Client("https://huggingface-projects-codellama-13b-chat.hf.space/", HF_TOKEN)
 codellama_threadid_userid_dictionary = {}
 codellama_threadid_conversation = {}
 intents = discord.Intents.default()
@@ -63,9 +61,7 @@ async def try_codellama(ctx, prompt):
         thread = await message.create_thread(name=prompt[:100])
 
         loop = asyncio.get_running_loop()
-        output_code = await loop.run_in_executor(
-            None, codellama_initial_generation, prompt, thread
-        )
+        output_code = await loop.run_in_executor(None, codellama_initial_generation, prompt, thread)
         codellama_threadid_userid_dictionary[thread.id] = ctx.author.id
 
         print(output_code)
@@ -98,9 +94,7 @@ def codellama_initial_generation(prompt, thread):
 
         codellama_threadid_conversation[thread.id] = chat_history
         if len(response) > 1300:
-            response = (
-                response[:1300] + "...\nTruncating response due to discord api limits."
-            )
+            response = (response[:1300] + "...\nTruncating response due to discord api limits.")
         return response
 
 
@@ -109,14 +103,9 @@ async def continue_codellama(message):
     try:
         if not message.author.bot:
             global codellama_threadid_userid_dictionary  # tracks userid-thread existence
-            if (
-                message.channel.id in codellama_threadid_userid_dictionary
-            ):  # is this a valid thread?
-                if (
-                    codellama_threadid_userid_dictionary[message.channel.id]
-                    == message.author.id
-                ):
-                    global codellama_threadid_conversation
+            if message.channel.id in codellama_threadid_userid_dictionary:  # is this a valid thread?
+                if codellama_threadid_userid_dictionary[message.channel.id] == message.author.id:
+                     global codellama_threadid_conversation
 
                     prompt = message.content
                     chat_history = codellama_threadid_conversation[message.channel.id]
@@ -143,9 +132,7 @@ async def continue_codellama(message):
                             conversation.append((prompt, response))
                             with open(chat_history, "w") as json_file:
                                 json.dump(conversation, json_file)
-                            codellama_threadid_conversation[
-                                message.channel.id
-                            ] = chat_history
+                            codellama_threadid_conversation[message.channel.id] = chat_history
 
                             if len(response) > 1300:
                                 response = (
@@ -161,9 +148,7 @@ async def continue_codellama(message):
                                     total_characters += len(string)
 
                             if total_characters >= 15000:
-                                await message.reply(
-                                    "Conversation ending due to length, feel free to start a new one!"
-                                )
+                                await message.reply("Conversation ending due to length, feel free to start a new one!")
 
     except Exception as e:
         print(f"continue_codellama Error: {e}")
@@ -182,11 +167,9 @@ threading.Thread(target=run_bot).start()
 event.wait()
 
 with gr.Blocks() as demo:
-    gr.Markdown(
-        """
+    gr.Markdown("""
     # Discord bot of https://huggingface.co/spaces/huggingface-projects/codellama-13b-chat
     https://discord.com/api/oauth2/authorize?client_id=1152238037355474964&permissions=326417516544&scope=bot
-    """
-    )
+    """)
 
 demo.launch()
