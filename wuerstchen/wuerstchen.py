@@ -20,14 +20,16 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 #---------------------------------------------------------------------------------------------------------------------
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
-#---------------------------------------------------------------------------------------------------------------------
+
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     synced = await bot.tree.sync()
     print(f"Synced commands: {', '.join([s.name for s in synced])}.")
     print("------")
-#---------------------------------------------------------------------------------------------------------------------
+
+
 @bot.hybrid_command(
     name="wuerstchen",
     description="Enter a prompt to generate art!",
