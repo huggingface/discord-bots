@@ -129,7 +129,7 @@ threading.Thread(target=run_bot).start()
 event.wait()
 
 
-welcome_message = f"""
+welcome_message = """
 ## Add this bot to your server by clicking this link: 
 
 https://discord.com/api/oauth2/authorize?client_id=1155169841276260546&permissions=326417516544&scope=bot
