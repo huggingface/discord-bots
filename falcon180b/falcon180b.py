@@ -79,9 +79,7 @@ async def chat(ctx, prompt: str):
             thread_to_client[thread.id] = client
             thread_to_user[thread.id] = ctx.author.id
         except QueueError:
-            await thread.send(
-                "The gradio space powering this bot is really busy! Please try again later!"
-            )
+            await thread.send("The gradio space powering this bot is really busy! Please try again later!")
 
     except Exception as e:
         print(f"{e}")
@@ -99,9 +97,7 @@ async def continue_chat(message):
             response = job.outputs()[-1]
             await message.reply(truncate_response(response))
         except QueueError:
-            await message.reply(
-                "The gradio space powering this bot is really busy! Please try again later!"
-            )
+            await message.reply("The gradio space powering this bot is really busy! Please try again later!")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -181,11 +177,9 @@ else:
 
 
 with gr.Blocks() as demo:
-    gr.Markdown(
-        f"""
+    gr.Markdown(f"""
     # Discord bot of https://tiiuae-falcon-180b-demo.hf.space
     {welcome_message}
-    """
-    )
+    """)
 
 demo.launch()
