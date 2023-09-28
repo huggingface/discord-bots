@@ -2,14 +2,10 @@ import asyncio
 import glob
 import os
 import random
-import os
-import random
 import threading
-from discord import app_commands
 from discord.ext import commands
 import discord
 import gradio as gr
-import discord
 from gradio_client import Client
 
 
