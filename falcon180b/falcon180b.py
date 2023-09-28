@@ -128,24 +128,24 @@ threading.Thread(target=run_bot).start()
 
 event.wait()
 
-else:
-    welcome_message = f"""
-    ## Add this bot to your server by clicking this link: 
-    
-    https://discord.com/api/oauth2/authorize?client_id=1155169841276260546&permissions=326417516544&scope=bot
 
-    ## How to use it?
+welcome_message = f"""
+## Add this bot to your server by clicking this link: 
 
-    The bot can be triggered via `/falcon180` followed by your text prompt.
-    
-    This will create a thread with the bot's response to your text prompt.
-    You can reply in the thread (without `/falcon180`) to continue the conversation.
-    In the thread, the bot will only reply to the original author of the command.
+https://discord.com/api/oauth2/authorize?client_id=1155169841276260546&permissions=326417516544&scope=bot
 
-    ⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
-    
-    ⚠️ Note ⚠️: Bot commands do not work in DMs with the bot as of now.
-    """
+## How to use it?
+
+The bot can be triggered via `/falcon180` followed by your text prompt.
+
+This will create a thread with the bot's response to your text prompt.
+You can reply in the thread (without `/falcon180`) to continue the conversation.
+In the thread, the bot will only reply to the original author of the command.
+
+⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
+
+⚠️ Note ⚠️: Bot commands do not work in DMs with the bot as of now.
+"""
 
 
 with gr.Blocks() as demo:
