@@ -17,7 +17,7 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 wuerstchen_client = Client("huggingface-projects/Wuerstchen-duplicate", HF_TOKEN)
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-#---------------------------------------------------------------------------------------------------------------------
+
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="/", intents=intents)
 
