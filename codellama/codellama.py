@@ -134,7 +134,7 @@ async def continue_codellama(message):
                             codellama_threadid_conversation[message.channel.id] = chat_history
 
                             if len(response) > 1300:
-                                response = (response[:1300] + "...\nTruncating response due to discord api limits.")
+                                response = response[:1300] + "...\nTruncating response due to discord api limits."
 
                             await message.reply(response)
 
@@ -150,7 +150,6 @@ async def continue_codellama(message):
         print(f"Error: {e}")
 
 
-# ---------------------------------------------------------------------------------------------------------------------
 def run_bot():
     if not DISCORD_TOKEN:
         print("DISCORD_TOKEN NOT SET")
