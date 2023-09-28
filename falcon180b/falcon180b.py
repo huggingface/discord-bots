@@ -6,10 +6,7 @@ from typing import Optional
 
 import discord
 import gradio as gr
-from discord import Permissions
 from discord.ext import commands
-from discord.utils import oauth_url
-
 import gradio_client as grc
 from gradio_client.utils import QueueError
 
@@ -131,31 +128,6 @@ threading.Thread(target=run_bot).start()
 
 event.wait()
 
-if not DISCORD_TOKEN:
-    welcome_message = """
-
-    ## You have not specified a DISCORD_TOKEN, which means you have not created a bot account. Please follow these steps:
-
-    ### 1. Go to https://discord.com/developers/applications and click 'New Application'
-    
-    ### 2. Give your bot a name 🤖
-
-    ![](https://gradio-builds.s3.amazonaws.com/demo-files/discordbots/BotName.png)
-    
-    ## 3. In Settings > Bot, click the 'Reset Token' button to get a new token. Write it down and keep it safe 🔐
-    
-    ![](https://gradio-builds.s3.amazonaws.com/demo-files/discordbots/ResetToken.png)
-    
-    ## 4. Optionally make the bot public if you want anyone to be able to add it to their servers
-    
-    ## 5. Scroll down and enable 'Message Content Intent' under 'Priviledged Gateway Intents'
-    
-    ![](https://gradio-builds.s3.amazonaws.com/demo-files/discordbots/MessageContentIntent.png)
-
-    ## 6. Save your changes!
-
-    ## 7. The token from step 3 is the DISCORD_TOKEN. Rerun the deploy_discord command, e.g client.deploy_discord(discord_bot_token=DISCORD_TOKEN, ...), or add the token as a space secret manually.
-"""
 else:
     welcome_message = f"""
     ## Add this bot to your server by clicking this link: 
