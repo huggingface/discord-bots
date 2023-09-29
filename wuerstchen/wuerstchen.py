@@ -88,13 +88,32 @@ def run_bot():
 
 threading.Thread(target=run_bot).start()
 """This allows us to run the Discord bot in a Python thread"""
+
+
+welcome_message = """
+## Add this bot to your server by clicking this link: 
+
+https://discord.com/api/oauth2/authorize?client_id=1155489509518098565&permissions=51200&scope=bot
+
+## How to use it?
+
+The bot can be triggered via `/wuerstchen` followed by your text prompt.
+
+This will generate an image based on your prompt, which is then posted in the channel!
+
+⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
+
+⚠️ Note ⚠️: Bot commands do not work in DMs with the bot as of now.
+"""
+
+
 with gr.Blocks() as demo:
-    gr.Markdown("""
-    # Huggingbots Server
-    This space hosts the huggingbots discord bot.
-    Currently supported models are Falcon and DeepfloydIF
-    https://discord.com/api/oauth2/authorize?client_id=1155489509518098565&permissions=51200&scope=bot
+    gr.Markdown(f"""
+    # Discord bot of https://huggingface.co/spaces/warp-ai/Wuerstchen
+    {welcome_message}
     """)
+
+
 demo.queue(concurrency_count=100)
 demo.queue(max_size=100)
 demo.launch()
