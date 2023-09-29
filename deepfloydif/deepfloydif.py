@@ -279,7 +279,7 @@ https://discord.com/api/oauth2/authorize?client_id=1154395078735953930&permissio
 
 The bot can be triggered via `/deepfloydif` followed by your text prompt.
 
-This will generate images based on the text prompt. You can upscale the images using the buttons, for up to 16x the detail!
+This will generate images based on the text prompt. You can upscale the images using the buttons up to 16x!
 
 ⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
 
