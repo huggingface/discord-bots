@@ -8,7 +8,7 @@ import discord
 import gradio as gr
 from gradio_client import Client
 
-
+#test
 HF_TOKEN = os.getenv("HF_TOKEN")
 wuerstchen_client = Client("huggingface-projects/Wuerstchen-duplicate", HF_TOKEN)
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
