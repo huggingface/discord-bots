@@ -142,7 +142,7 @@ async def deepfloydif_generate64(ctx, prompt):
     try:
         channel = ctx.channel
         # interaction.response message can't be used to create a thread, so we create another message
-        message = await ctx.send(f"**{prompt}** - {ctx.author.mention} <a:loading:1114111677990981692>")
+        message = await ctx.send(f"**{prompt}** - {ctx.author.mention} (generating...)")
 
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(None, deepfloydif_generate64_inference, prompt)
@@ -177,7 +177,7 @@ async def deepfloydif_generate64(ctx, prompt):
                     index = int(interaction.data["custom_id"])  # 0,1,2,3
 
                     await interaction.response.send_message(
-                        f"{interaction.user.mention} <a:loading:1114111677990981692>", ephemeral=True
+                        f"{interaction.user.mention} (upscaling...)", ephemeral=True
                     )
                     result_path = await deepfloydif_upscale256(index, path_for_upscale256_upscaling)
 
@@ -202,7 +202,7 @@ async def deepfloydif_generate64(ctx, prompt):
                     index = int(interaction.data["custom_id"])
 
                     await interaction.response.send_message(
-                        f"{interaction.user.mention} <a:loading:1114111677990981692>", ephemeral=True
+                        f"{interaction.user.mention} (upscaling...)", ephemeral=True
                     )
                     result_path = await deepfloydif_upscale1024(index, path_for_upscale256_upscaling, prompt)
 
@@ -268,13 +268,32 @@ def run_bot():
 
 
 threading.Thread(target=run_bot).start()
-"""This allows us to run the Discord bot in a Python thread"""
+
+
+welcome_message = """
+## Add this bot to your server by clicking this link: 
+
+https://discord.com/api/oauth2/authorize?client_id=1154395078735953930&permissions=51200&scope=bot
+
+## How to use it?
+
+The bot can be triggered via `/deepfloydif` followed by your text prompt.
+
+This will generate images based on the text prompt. You can upscale the images using the buttons, for up to 16x the detail!
+
+⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
+
+⚠️ Note ⚠️: Bot commands do not work in DMs with the bot as of now.
+"""
+
+
 with gr.Blocks() as demo:
-    gr.Markdown("""
-    # Huggingbots Server
-    This space hosts the huggingbots discord bot.
-    Currently supported models are Falcon and DeepfloydIF
+    gr.Markdown(f"""
+    # Discord bot of https://huggingface.co/spaces/DeepFloyd/IF
+    {welcome_message}
     """)
+
+
 demo.queue(concurrency_count=100)
 demo.queue(max_size=100)
 demo.launch()
