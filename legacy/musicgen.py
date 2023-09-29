@@ -29,6 +29,7 @@ def get_client(session: Optional[str] = None) -> grc.Client:
         client.session_hash = session
     return client
 
+
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -44,13 +45,13 @@ async def on_ready():
 
 
 @bot.hybrid_command(
-    name="musicgen", 
+    name="musicgen",
     description="Enter a prompt to generate music!",
 )
 async def musicgen_command(ctx, prompt: str, seed: int = None):
     """Generates music based on a prompt"""
     if ctx.author.id == bot.user.id:
-        return    
+        return
     if seed is None:
         seed = random.randint(1, 10000)
     try:
@@ -64,7 +65,7 @@ async def music_create(ctx, prompt, seed):
     try:
         message = await ctx.send(f"**{prompt}** - {ctx.author.mention} Generating...")
         thread = await message.create_thread(name=prompt[:100])
-        
+
         loop = asyncio.get_running_loop()
         client = await loop.run_in_executor(None, get_client, None)
         job = client.submit(prompt, seed, api_name="/predict")
@@ -79,21 +80,21 @@ async def music_create(ctx, prompt, seed):
             short_filename = prompt[:20]
             audio_filename = f"{short_filename}.mp3"
             video_filename = f"{short_filename}.mp4"
-    
+
             with open(video, "rb") as file:
                 discord_video_file = discord.File(file, filename=video_filename)
             await thread.send(file=discord_video_file)
-    
+
             with open(audio, "rb") as file:
                 discord_audio_file = discord.File(file, filename=audio_filename)
-            await thread.send(file=discord_audio_file)    
-            #await message.delete()
+            await thread.send(file=discord_audio_file)
+            # await message.delete()
             
         except QueueError:
             await ctx.send("The gradio space powering this bot is really busy! Please try again later!")
 
     except Exception as e:
-        print(f"music_create Error: {e}")        
+        print(f"music_create Error: {e}")
 
 
 def run_bot():
