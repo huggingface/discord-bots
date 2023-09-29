@@ -1,6 +1,6 @@
 .PHONY: quality style
 
-check_dirs := codellama.py, deepfloydif.py, falcon180b.py, wuerstchen.py, musicgen.py
+check_dirs := /codellama/codellama.py, /deepfloydif/deepfloydif.py, /falcon/falcon180b.py, /wuerstchen/wuerstchen.py, /legacy/musicgen.py
 
 quality:
 	black --check $(check_dirs)
