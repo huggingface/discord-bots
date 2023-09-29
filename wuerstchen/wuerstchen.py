@@ -70,7 +70,7 @@ def wuerstchen_inference(prompt):
 async def run_wuerstchen(ctx, prompt):
     """Responds to /Wuerstchen command"""
     try:
-        message = await ctx.send(f"**{prompt}** - {ctx.author.mention} <a:loading:1114111677990981692>")
+        message = await ctx.send(f"**{prompt}** - {ctx.author.mention} (generating...)")
 
         loop = asyncio.get_running_loop()
         result_path = await loop.run_in_executor(None, wuerstchen_inference, prompt)
