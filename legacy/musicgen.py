@@ -89,7 +89,7 @@ async def music_create(ctx, prompt, seed):
                 discord_audio_file = discord.File(file, filename=audio_filename)
             await thread.send(file=discord_audio_file)
             # await message.delete()
-            
+
         except QueueError:
             await ctx.send("The gradio space powering this bot is really busy! Please try again later!")
 
