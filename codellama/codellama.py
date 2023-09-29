@@ -161,10 +161,29 @@ def run_bot():
 threading.Thread(target=run_bot).start()
 event.wait()
 
+welcome_message = """
+## Add this bot to your server by clicking this link: 
+
+https://discord.com/api/oauth2/authorize?client_id=1152238037355474964&permissions=309237647360&scope=bot
+
+## How to use it?
+
+The bot can be triggered via `/codellama` followed by your text prompt.
+
+This will generate text based on the text prompt and create a thread for the discussion.
+
+To continue the conversation, simply ask additional questions in the thread - no need for repeating the command!
+
+⚠️ Note ⚠️: Please make sure this bot's command does have the same name as another command in your server.
+
+⚠️ Note ⚠️: Bot commands do not work in DMs with the bot as of now.
+"""
+
+
 with gr.Blocks() as demo:
-    gr.Markdown("""
-    # Discord bot of https://huggingface.co/spaces/huggingface-projects/codellama-13b-chat
-    https://discord.com/api/oauth2/authorize?client_id=1152238037355474964&permissions=326417516544&scope=bot
+    gr.Markdown(f"""
+    # Discord bot of https://huggingface.co/spaces/codellama/codellama-13b-chat
+    {welcome_message}
     """)
 
 demo.launch()
