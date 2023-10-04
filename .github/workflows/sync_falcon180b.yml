@@ -1,0 +1,23 @@
+name: Sync with Hugging Face Hub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Sync with Hugging Face (Falcon180b)
+      uses: nateraw/huggingface-sync-action@v0.0.4
+      with:
+        github_repo_id: lunarflu/huggingbots
+        huggingface_repo_id: lunarflu/falcon180b-bot
+        repo_type: space
+        space_sdk: gradio
+        hf_token: ${{ secrets.HF_TOKEN_WRITE }}
+        subdirectory: falcon180b
+        files: |
+          app.py: lunarflu/falcon180b-bot
+          requirements.txt: lunarflu/falcon180b-bot
