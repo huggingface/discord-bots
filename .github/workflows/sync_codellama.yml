@@ -12,12 +12,12 @@ jobs:
     - name: Sync with Hugging Face (Codellama)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
-        github_repo_id: lunarflu/huggingbots
-        huggingface_repo_id: lunarflu/codellama-bot
+        github_repo_id: huggingface/discord-bots
+        huggingface_repo_id: huggingface-projects/codellama-bot
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         subdirectory: codellama
         files: |
-          app.py: lunarflu/codellama-bot
-          requirements.txt: lunarflu/codellama-bot
+          app.py: huggingface-projects/codellama-bot
+          requirements.txt: huggingface-projects/codellama-bot
