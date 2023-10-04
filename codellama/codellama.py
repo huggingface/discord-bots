@@ -62,8 +62,6 @@ async def try_codellama(ctx, prompt):
         loop = asyncio.get_running_loop()
         output_code = await loop.run_in_executor(None, codellama_initial_generation, prompt, thread)
         codellama_threadid_userid_dictionary[thread.id] = ctx.author.id
-
-        print(output_code)
         await thread.send(output_code)
     except Exception as e:
         print(f"Error: {e}")
