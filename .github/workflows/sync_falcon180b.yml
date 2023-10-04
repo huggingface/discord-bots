@@ -12,12 +12,12 @@ jobs:
     - name: Sync with Hugging Face (Falcon180b)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
-        github_repo_id: lunarflu/huggingbots
-        huggingface_repo_id: lunarflu/falcon180b-bot
+        github_repo_id: huggingface/discord-bots
+        huggingface_repo_id: huggingface-projects/falcon180b-bot
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         subdirectory: falcon180b
         files: |
-          app.py: lunarflu/falcon180b-bot
-          requirements.txt: lunarflu/falcon180b-bot
+          app.py: huggingface-projects/falcon180b-bot
+          requirements.txt: huggingface-projects/falcon180b-bot
