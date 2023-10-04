@@ -10,7 +10,6 @@ import discord
 from gradio_client import Client
 from PIL import Image
 from discord.ext import commands
-
 from discord.ui import Button, View
 
 HF_TOKEN = os.getenv("HF_TOKEN")
