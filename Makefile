@@ -1,6 +1,6 @@
 .PHONY: quality style
 
-check_dirs := app.py deepfloydif.py falcon.py
+check_dirs := /codellama/app.py, /deepfloydif/app.py, /falcon/app.py, /wuerstchen/app.py, /legacy/app.py
 
 quality:
 	black --check $(check_dirs)
