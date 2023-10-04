@@ -12,12 +12,12 @@ jobs:
     - name: Sync with Hugging Face (DeepfloydIF)
       uses: nateraw/huggingface-sync-action@v0.0.4
       with:
-        github_repo_id: lunarflu/huggingbots
-        huggingface_repo_id: lunarflu/deepfloydif-bot
+        github_repo_id: huggingface/discord-bots
+        huggingface_repo_id: huggingface-projects/deepfloydif-bot
         repo_type: space
         space_sdk: gradio
         hf_token: ${{ secrets.HF_TOKEN_WRITE }}
         subdirectory: deepfloydif
         files: |
-          app.py: lunarflu/deepfloydIF-bot
-          requirements.txt: lunarflu/deepfloydIF-bot
+          app.py: huggingface-projects/deepfloydif-bot
+          requirements.txt: huggingface-projects/deepfloydif-bot
