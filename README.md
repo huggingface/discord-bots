@@ -1,5 +1,5 @@
-# Our bots
-| Bot | Header 2 | Header 3 |
+# Our bots 🤖
+| Bot | Code Link | Invite Link |
 | -------- | -------- | -------- |
 | Codellama   | [Code](https://huggingface.co/spaces/huggingface-projects/codellama-bot)   | [Invite Bot](https://discord.com/api/oauth2/authorize?client_id=1152238037355474964&permissions=309237647360&scope=bot)   |
 | DeepfloydIF  | [Code](https://huggingface.co/spaces/huggingface-projects/deepfloydif-bot)   | [Invite Bot](https://discord.com/api/oauth2/authorize?client_id=1154395078735953930&permissions=51200&scope=bot)   |
