@@ -70,6 +70,9 @@ def wuerstchen_inference(prompt):
 async def run_wuerstchen(ctx, prompt):
     """Responds to /Wuerstchen command"""
     try:
+        if ctx.guild.id == 879548962464493619:
+            if ctx.channel.id != 1151792944676864041:
+                return
         message = await ctx.send(f"**{prompt}** - {ctx.author.mention} (generating...)")
 
         loop = asyncio.get_running_loop()

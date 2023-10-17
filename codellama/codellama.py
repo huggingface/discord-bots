@@ -53,6 +53,9 @@ async def on_message(message):
 async def try_codellama(ctx, prompt):
     """Generates code based on a given prompt"""
     try:
+        if ctx.guild.id == 879548962464493619:
+            if ctx.channel.id != 1147210106321256508:
+                return
         global codellama_threadid_userid_dictionary
         global codellama_threadid_conversation
 

@@ -139,6 +139,9 @@ def combine_images(png_files, stage_1_images, partial_path):
 async def deepfloydif_generate64(ctx, prompt):
     """DeepfloydIF command (generate images with realistic text using slash commands)"""
     try:
+        if ctx.guild.id == 879548962464493619:
+            if ctx.channel.id != 1119313215675973714:
+                return
         channel = ctx.channel
         # interaction.response message can't be used to create a thread, so we create another message
         message = await ctx.send(f"**{prompt}** - {ctx.author.mention} (generating...)")
