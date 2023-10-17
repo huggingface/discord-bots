@@ -61,6 +61,9 @@ async def chat(ctx, prompt: str):
     if ctx.author.id == bot.user.id:
         return
     try:
+        if ctx.guild.id == 879548962464493619:
+            if ctx.channel.id != 1119313248056004729:
+                return
         message = await ctx.send("Creating thread...")
 
         thread = await message.create_thread(name=prompt[:100])
