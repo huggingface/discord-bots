@@ -9,8 +9,13 @@ import gradio as gr
 from discord.ext import commands
 from gradio_client import Client
 
+# HF GUILD SETTINGS
+# taken from here https://huggingface.co/spaces/huggingface-projects/huggingbots/blob/main/app.py
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
+MY_GUILD = discord.Object(id=MY_GUILD_ID)
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
+
 event = Event()
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
 codellama_client = Client("https://huggingface-projects-codellama-13b-chat.hf.space/", HF_TOKEN)
 codellama_threadid_userid_dictionary = {}
@@ -22,9 +27,11 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    synced = await bot.tree.sync()
+
+async def setup_hook():
+    await bot.wait_until_ready()
+    synced = await bot.tree.sync(guild=discord.Object(MY_GUILD_ID))
     print(f"Synced commands: {', '.join([s.name for s in synced])}.")
-    event.set()
     print("------")
 
 
@@ -48,6 +55,8 @@ async def on_message(message):
             await continue_codellama(message)
     except Exception as e:
         print(f"Error: {e}")
+
+    await bot.process_commands(message)
 
 
 async def try_codellama(ctx, prompt):

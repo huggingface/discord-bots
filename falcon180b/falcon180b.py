@@ -14,6 +14,12 @@ event = Event()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
+# HF GUILD SETTINGS
+# taken from here https://huggingface.co/spaces/huggingface-projects/huggingbots/blob/main/app.py
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
+MY_GUILD = discord.Object(id=MY_GUILD_ID)
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
+
 
 async def wait(job):
     while not job.done():
@@ -43,9 +49,12 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    synced = await bot.tree.sync()
+    print("------")
+
+async def setup_hook():
+    await bot.wait_until_ready()
+    synced = await bot.tree.sync(guild=discord.Object(MY_GUILD_ID))
     print(f"Synced commands: {', '.join([s.name for s in synced])}.")
-    event.set()
     print("------")
 
 
@@ -111,11 +120,11 @@ async def on_message(message):
             if message.channel.id in thread_to_user:
                 if thread_to_user[message.channel.id] == message.author.id:
                     await continue_chat(message)
-            else:
-                await bot.process_commands(message)
 
     except Exception as e:
         print(f"Error: {e}")
+
+    await bot.process_commands(message)
 
 
 # running in thread

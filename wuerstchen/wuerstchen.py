@@ -11,7 +11,12 @@ from gradio_client import Client
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 wuerstchen_client = Client("huggingface-projects/Wuerstchen-duplicate", HF_TOKEN)
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+
+# HF GUILD SETTINGS
+# taken from here https://huggingface.co/spaces/huggingface-projects/huggingbots/blob/main/app.py
+MY_GUILD_ID = 1077674588122648679 if os.getenv("TEST_ENV", False) else 879548962464493619
+MY_GUILD = discord.Object(id=MY_GUILD_ID)
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 
 
 intents = discord.Intents.all()
@@ -21,7 +26,11 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    synced = await bot.tree.sync()
+    print("------")
+
+async def setup_hook():
+    await bot.wait_until_ready()
+    synced = await bot.tree.sync(guild=discord.Object(MY_GUILD_ID))
     print(f"Synced commands: {', '.join([s.name for s in synced])}.")
     print("------")
 
