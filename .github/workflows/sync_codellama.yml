@@ -5,8 +5,12 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
     - name: Sync with Hugging Face (Codellama)

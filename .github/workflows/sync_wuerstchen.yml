@@ -5,12 +5,16 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
     - name: Sync with Hugging Face (Wuerstchen)
-      uses: nateraw/huggingface-sync-action@v0.0.5
+      uses: nateraw/huggingface-sync-action@54e4f55015a52747b4e2a5c9f2ee1056880cdd42 # v0.0.5
       with:
         github_repo_id: huggingface/discord-bots
         huggingface_repo_id: huggingface-projects/wuerstchen-bot
