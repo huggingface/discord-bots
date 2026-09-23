@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Sync with Hugging Face (Falcon180b)
-      uses: nateraw/huggingface-sync-action@v0.0.4
+      uses: nateraw/huggingface-sync-action@54e4f55015a52747b4e2a5c9f2ee1056880cdd42 # v0.0.5
       with:
         github_repo_id: huggingface/discord-bots
         huggingface_repo_id: huggingface-projects/falcon180b-bot
